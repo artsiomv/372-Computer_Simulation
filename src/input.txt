@@ -1,0 +1,2 @@
+ADD $a0, $a1, $a2; this is notes that doesn’t matter for the program
+LW $a0, 5; that doesn’t matter too
