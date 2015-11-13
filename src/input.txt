@@ -1,1 +1,1 @@
-ADDI $a0, $zero, 5; that doesn’t matter too
+SW $a0, 5;

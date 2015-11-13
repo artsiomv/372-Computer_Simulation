@@ -12,8 +12,8 @@
 char* InstructionRegister(char* instruction, char* params[], int numberOfParameters) {
 	int pars[numberOfParameters];
 	int numberRetrieved;
-	for(int i = 1; i < numberOfParameters; i++) {
-		printf("PARS %d \n", pars[i]);
+	for(int i = 0; i < numberOfParameters; i++) {
+		printf("PARS %s \n", params[i]);
 	}
 
 	char* binary;
@@ -26,7 +26,7 @@ char* InstructionRegister(char* instruction, char* params[], int numberOfParamet
 		binary = "0001";
 	}
 	else if(strcmp("ADDI", instruction) == 0) {
-
+		//TODO
 		binary = "0010";
 	}
 	else if(strcmp("LW", instruction) == 0) {
@@ -65,3 +65,4 @@ char* InstructionRegister(char* instruction, char* params[], int numberOfParamet
 	}
 	return binary;
 }
+
