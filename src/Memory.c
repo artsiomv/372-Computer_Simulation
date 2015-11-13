@@ -20,7 +20,6 @@ typedef struct instruction_str {
 
 int Memory(char* instruction, char* params[], int numberOfParameters, int lines) {
 	Instruction instructs[100]; // <-  this line indicates how many lines is maximum in the file.
-
 	instructs[lines].counter = numberOfParameters;
 	instructs[lines].instruction = instruction;
 	for(int i = 0; i < numberOfParameters; i++) {

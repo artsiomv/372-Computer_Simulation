@@ -45,7 +45,11 @@ int decode(char* instruction, char* parameters, int lines) {
 		i++;
 	}
 
-	Memory(instruction, params, i, lines);
+	//send instruction to the instruction register to get binary
+	char* binaryInstruction = InstructionRegister(instruction, params, i);
+
+
+//	Memory(instruction, params, i, lines);
 
 //	for(int j = 0; j < i; j++) {
 //		printf("%d- %s\n",j, params[j]);
