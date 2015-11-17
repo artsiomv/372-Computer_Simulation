@@ -29,6 +29,6 @@ int Memory(char* instruction, char* params[], int numberOfParameters, int lines)
 	return 0;
 }
 
-int getMemory() {
-
-}
+//int getMemory() {
+//
+//}

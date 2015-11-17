@@ -37,7 +37,6 @@ char* InstructionRegister(char* instruction, char* params[], int numberOfParamet
 	}
 	else if(strcmp("SW", instruction) == 0) {
 		loadTo(params);
-		binary = "0100";
 	}
 	else if(strcmp("BEQ", instruction) == 0) {
 		binary = "0101";

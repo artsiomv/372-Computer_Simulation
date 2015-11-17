@@ -16,6 +16,41 @@ int execute() {
 	return 0;
 }
 
+int fromAlphaToDec(char* binInstr, char* parameters[]) {
+	if(strcmp(binInstr, "0100") == 0) {
+		char* pars = parameters[1];
+		int k;
+		int num = 0;
+		int len = strlen(parameters[1]);
+		for(k = 0; k < len-1; k++) {
+			int tempNum = (int)pars[k]-48;
+			num = num + tempNum;
+			num = num*10;
+		}
+		int tempNum = (int)pars[k]-48;
+		num = num + tempNum;
+		return num;
+	}
+	return 0;
+}
+
+char* fromDecToBin(int num) {
+	printf("%d\n", num);
+	char bin[25];
+	int i = 524288;
+	while(i >= 1) {
+		printf("%d\n", i);
+		if(num - i >= 0) {
+			strcat(bin, "1");
+			num = num - i;
+		}  else {
+			strcat(bin, "0");
+
+		}
+		i /= 2;
+	}
+	return bin;
+}
 
 char* getBinaryInstruction(char* inst) {
 	if(strcmp("ADD", inst) == 0) {
@@ -50,24 +85,21 @@ int main() {
 		int j = 0;
 		tok = strtok(buff, " ");
 		instruction = tok;
-		printf("INST %s\n", instruction );
 
 		char* binInstr = getBinaryInstruction(tok);
-		printf("%s\n", binInstr );
 
 		tok = strtok(NULL, ", ");
 		parameters[j] = tok;
-		printf("+ %s\n", parameters[j] );
 		j++;
 		tok = strtok(NULL, ", ");
 		parameters[j] = tok;
-		printf("+ %s\n", parameters[j] );
 		j++;
 		tok = strtok(NULL, ", ");
 		parameters[j] = tok;
-		printf("+ %s\n", parameters[j] );
 		j++;
-		Memory(instruction, parameters, j, i);
+//		Memory(instruction, parameters, j, i);
+		int num = fromAlphaToDec(binInstr, parameters);
+		char* binNum = fromDecToBin(num);
 		i++;
 	}
 	fclose(fp);
@@ -76,6 +108,5 @@ int main() {
 		fetch();
 		decode();
 		execute();
-
 	}
 }
