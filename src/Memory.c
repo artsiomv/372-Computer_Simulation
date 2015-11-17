@@ -15,12 +15,11 @@ typedef struct parameter_str {
 typedef struct instruction_str {
     char* instruction;
 	int counter;
-    Parameter pars[10];
+    Parameter pars[4];
 } Instruction;
 
 int Memory(char* instruction, char* params[], int numberOfParameters, int lines) {
 	Instruction instructs[100]; // <-  this line indicates how many lines is maximum in the file.
-
 	instructs[lines].counter = numberOfParameters;
 	instructs[lines].instruction = instruction;
 	for(int i = 0; i < numberOfParameters; i++) {
@@ -29,3 +28,7 @@ int Memory(char* instruction, char* params[], int numberOfParameters, int lines)
 
 	return 0;
 }
+
+//int getMemory() {
+//
+//}

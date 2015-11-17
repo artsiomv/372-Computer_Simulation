@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "main.h"
+//#include "main.h"
 
 //int printOut(Instruction* inst, int numberOfLines, FILE* outFile) {
 //	int i, j;
@@ -30,6 +30,35 @@
 //	return 0;
 //}
 
+//char* getBinaryParameters(char* parameters[], int num) {
+//	int i;
+//	for (i = 0; i < num; i++) {
+//
+//	}
+//
+//}
+
+char* getBinaryInstruction(char* inst) {
+	if(strcmp("ADD", inst) == 0) {
+		return "0000";
+	} else if(strcmp("NAND", inst) == 0) {
+		return "0001";
+	} else if(strcmp("ADDI", inst) == 0) {
+		return "0010";
+	} else if(strcmp("LW", inst) == 0) {
+		return "0011";
+	} else if(strcmp("SW", inst) == 0) {
+		return "0100";
+	} else if(strcmp("BEQ", inst) == 0) {
+		return "0101";
+	} else if(strcmp("JALR", inst) == 0) {
+		return "0110";
+	} else if(strcmp("HALT", inst) == 0) {
+		return "0111";
+	}
+	return "";
+}
+
 int decode(char* instruction, char* parameters, int lines) {
 	char* params[10];
 
@@ -44,14 +73,12 @@ int decode(char* instruction, char* parameters, int lines) {
 		parameters = strtok(NULL, ", ");
 		i++;
 	}
+	//get binary for instruction
+	char* binInstr = getBinaryInstruction(instruction);
+	printf("\n%s\n", binInstr);
 
-	Memory(instruction, params, i, lines);
-
-//	for(int j = 0; j < i; j++) {
-//		printf("%d- %s\n",j, params[j]);
-//	}
-//	printf("\n");
-
+	//get binary for parameters
+//	getBinaryParameters(params, i);
 	return 0;
 }
 int scanInput(FILE* inputFile, int lines) {
@@ -69,7 +96,6 @@ int scanInput(FILE* inputFile, int lines) {
 			strtok_r(instruction, " ", &parameters);
 
 			lines++;
-//			printf("%d\n", lines);
 			//decode the text into different variables
 			decode(instruction, parameters, lines);
 		}
