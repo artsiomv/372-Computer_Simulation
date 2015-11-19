@@ -47,7 +47,7 @@ int main() {
 	fp = fopen("input2.txt", "r");
 	while(fgets(buff, 50, fp)) {
 		buff[strcspn(buff, "\r\n")] = 0;
-//		printf("%s\n", buff);
+		printf("%s\n", buff);
 		int j = 0;
 		tok = strtok(buff, " ");
 		instruction = tok;

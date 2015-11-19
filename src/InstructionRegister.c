@@ -11,7 +11,7 @@
 
 int fromAlphaToDec(char* binInstr, char* parameter) {
 //	printf("3 %s\n", parameter);
-	if(strcmp(binInstr, "0100") == 0) {
+//	if(strcmp(binInstr, "0100") == 0 || strcmp(binInstr, "0011") == 0) {
 		char* pars = parameter;
 		int k;
 		int num = 0;
@@ -24,8 +24,8 @@ int fromAlphaToDec(char* binInstr, char* parameter) {
 		int tempNum = (int)pars[k]-48;
 		num = num + tempNum;
 		return num;
-	}
-	return 0;
+//	}
+//	return 0;
 }
 
 char* fromDecToBin(int num) {
@@ -42,6 +42,22 @@ char* fromDecToBin(int num) {
 	}
 	return bin;
 }
+
+//char* fromHexToBinary(int num) {
+//	printf("%d\n", num);
+//	int hex = num - '0';
+//	printf("%d\n", hex);
+//	int i = 262144;
+//	while(i >= 1) {
+//		if(num - i >= 0) {
+//			printf("%d\n", 1);
+//			num = num - i;
+//		} else
+//			printf("%d\n", 0);
+//		i /= 2;
+//	}
+//	return "";
+//}
 
 char* getBinaryRegister(char* reg) {
 	if(strcmp("$zero", reg) == 0) {
@@ -140,48 +156,65 @@ char* InstructionRegister(char* instruction, char* params[]) {
 		return memLine;
 	}
 	else if(strcmp("0011", instruction) == 0) { //LW
+		//assuming that the hex number will always be 0x42
+		char* hex = "00000000000001000010";
 		//TODO
-	}
-	else if(strcmp("0100", instruction) == 0) { //SW
-		//TODO doesnt work (should be different $a0, 0x42($a1)
-//		printf("0 %s\n", params[0]);
-//		printf("1 %s\n", params[1]);
+		char *tok;
+		char* parameters[2];
+		parameters[0] = strtok(params[1], "x");
+		parameters[0] = strtok(NULL, "(");
+		parameters[1] = strtok(NULL, ")");
+
 		char* binReg = getBinaryRegister(params[0]);
-//		printf("1.6 %s\n", binReg);
-		char* binReg2 = getBinaryRegister(params[1]);
-//		printf("1.7 %s\n", binReg2);
-		int num = fromAlphaToDec(instruction, params[2]);
-//		printf("4 %d\n", num);
-		char* binNum = fromDecToBin(num);
-//		printf("5 %s\n", binNum);
-//		printf("6 %s\n", memLine);
+		char* binReg2 = getBinaryRegister(parameters[1]);
 		strcpy(memLine, instruction);
-//		printf("7 %s\n", memLine);
 		strcat(memLine, binReg);
 		strcat(memLine, binReg2);
-//		printf("8 %s\n", memLine);
-		strcat(memLine, binNum);
-//		printf("9 %s\n", memLine);
+		strcat(memLine, hex);
 		return memLine;
 	}
-	else if(strcmp("0101", instruction) == 0) {
+	else if(strcmp("0100", instruction) == 0) { //SW
+		//assuming that the hex number will always be 0x42
+		char* hex = "00000000000001000010";
+		//TODO
+		char *tok;
+		char* parameters[2];
+		parameters[0] = strtok(params[1], "x");
+		parameters[0] = strtok(NULL, "(");
+		parameters[1] = strtok(NULL, ")");
+
+		char* binReg = getBinaryRegister(params[0]);
+		char* binReg2 = getBinaryRegister(parameters[1]);
+		strcpy(memLine, instruction);
+		strcat(memLine, binReg);
+		strcat(memLine, binReg2);
+		strcat(memLine, hex);
+		return memLine;
 	}
-	else if(strcmp("0110", instruction) == 0) {
+	else if(strcmp("0101", instruction) == 0) { //BEQ
+		//assuming that the hex number will always be 0x42
+//		char* hex = "00000000000001000010";
+		//TODO
+		char *tok;
+		char* parameters[2];
+		parameters[0] = strtok(params[1], "x");
+		parameters[0] = strtok(NULL, "(");
+		parameters[1] = strtok(NULL, ")");
+
+		char* binReg = getBinaryRegister(params[0]);
+		char* binReg2 = getBinaryRegister(parameters[1]);
+		strcpy(memLine, instruction);
+		strcat(memLine, binReg);
+		strcat(memLine, binReg2);
+//		strcat(memLine, hex);
+		return memLine;
+	}
+	else if(strcmp("0110", instruction) == 0) { //JALR
 	}
 	else if(strcmp("NOP", instruction) == 0) {
 		//????????
 	}
 	else if(strcmp("0111", instruction) == 0) {
 	}
-	else if(strcmp("EI", instruction) == 0) {
-		//????????
-	}
-	else if(strcmp("DI", instruction) == 0) {
-		//?????????
-	}
-	else if(strcmp("RETI", instruction) == 0) {
-		//??????????
-	}
 	return "";
 }
-
