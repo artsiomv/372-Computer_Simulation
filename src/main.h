@@ -9,6 +9,6 @@
 #define MAIN_H_
 
 int Memory(char* instruction, char* params[], int numberOfParameters, int lines);
-//char* InstructionRegister(char* instruction, char* params[], int numberOfParameters);
+char* InstructionRegister(char* instruction, char* params[]);
 
 #endif /* MAIN_H_ */

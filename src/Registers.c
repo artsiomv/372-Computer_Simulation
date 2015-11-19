@@ -31,30 +31,6 @@ typedef struct register_str {
 	int $fp;
 	int $ra;
 
-
-	void printbinchar(char* character)
-	{
-	    char output[9];
-	    itoa(character);
-//	    printf("%s\n", output);
-	}
-
-	int makeBinaryString(char* num) {
-		printf("%s\n", num);
-		char* binNumber;
-		int i = 8;
-		while(i >= 1) {
-			if(num - i >= 0) {
-				printf("%d", 1);
-				binNumber += 1;
-				num = num - i;
-			}  else
-				printf("%d", 0);
-			i /= 2;
-		}
-		return 0;
-	}
-
 int loadTo(char* param[]) {
 	char* ptr;
 
@@ -66,8 +42,6 @@ int loadTo(char* param[]) {
 	}
 	else if(strcmp("$a0", param[0]) == 0) {
 		//TODO
-//		makeBinaryString(param[1]);
-		printbinchar(param[1]);
 		$a0 = strtol(param[1], &ptr, 10);
 	}
 	else if(strcmp("$a1", param[0]) == 0) {

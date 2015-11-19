@@ -1,1 +1,4 @@
-SW $a0, 524000
+ADD $a1, $a2, $a0
+ADDI $a0, $zero, $zero
+ADDI $a0, $zero, $zero
+NAND $a0, $a1, $a2
