@@ -1,1 +1,8 @@
-SW $a0, 5;
+ADDI $a0, $a1, 5
+ADD $a0, $a1, $a2
+SW $a0, 0x42($a1)
+LD $a0, 0x42($a1)
+
+NAND $a0, $a1, $a2
+LW $s0, 0x42($s1)
+SW $v0, 0x42($at)

@@ -1,18 +1,104 @@
 #include <stdio.h>
 #include <string.h>
 #include <regex.h>
-
 #include "main.h"
 
-int fetch() {
-	return 0;
+typedef struct instruction{
+	unsigned int opcode;
+	unsigned int reg1;
+	unsigned int reg2;
+	unsigned int rest;
+} Instruction;
+Instruction instruction;
+//Instruction inst;
+
+void fetch(int line) {
+//	printf("@%d\n", line);
+	instruction = getMemory(line);
+//	printf("- %s\n", instruction);
+//	printf("- %04d\n", instruction.opcode);
+
 }
 
 int decode() {
+//	int instruct = 0;
+//	int opcode = 0;
+//	int reg1 = 0;
+//	int reg2 = 0;
+//	int rest = 0;
+//	int i;
+//
+//	//get opcode
+//	for(i = 0; i < 4; i++) {
+////		printf("%c\n", instruction[i]);
+//		if(instruction[i] == '1') {
+//			printf("1");
+//			opcode = opcode * 10 + 1;
+//		}
+//		else opcode = opcode * 10;
+//	}
+//	printf("OP  %d\n", opcode);
+//	instruction.opcode = opcode;
+//
+//	//get first register
+//	for(i = 4; i < 8; i++) {
+//		if(instruction[i]== '1') reg1 = reg1 * 10 + 1;
+//		else reg1 = reg1 * 10;
+//	}
+//	instruction.reg1 = reg1;
+//	//get second register
+//	for(i = 8; i < 12; i++) {
+//		if(instruction[i]== '1') reg2 = reg2 * 10 + 1;
+//		else reg2 = reg2 * 10;
+//	}
+//	instruction.reg2 = reg2;
+//	//get the rest of the numbers
+//	for(i = 12; i < 32; i++) {
+//		if(instruction[i]== '1') rest = rest * 10 + 1;
+//		else rest = rest * 10;
+//	}
+//	instruction.rest = rest;
+
+
+//	printf("%d\n", instruction.opcode);
+	if(instruction.opcode == 0) { 				//ADD
+		int opcode = instruction.opcode;
+		int reg1 = instruction.reg1;
+		int reg2 = instruction.reg2;
+		int unused = 0000000000000000;   //0x16
+		int reg3 = instruction.rest;
+	}
+	else if(instruction.opcode == 10) {         //ADDI
+		char buffer[20];// = instruction.rest;
+		sprintf(buffer, "%d", instruction.rest);
+		int offSet = sizeof(buffer) - sizeof(instruction.rest);
+
+		char off[20] = "";
+		for(int i = 0; i < offSet; i++) {
+			if(strcmp(off, "") == 0) strcpy(off, "0");
+			else strcat(off, "0");
+		}
+		strcat(off, buffer);
+
+		//find imm value
+		int num = 0;
+		for(int i = 0; i < strlen(off); i++) {
+			if(off[i] == '1') num = num*2+1;
+			else num = num*2+0;
+		}
+
+		int opcode = instruction.opcode;
+		int reg1 = instruction.reg1;
+		int reg2 = instruction.reg2;
+		int field3 = num;
+
+		execute(opcode, reg1, reg2, field3);
+	}
 	return 0;
 }
 
-int execute() {
+int execute(int opcode, int reg1, int reg2, field3) {
+	//TODO
 	return 0;
 }
 
@@ -44,10 +130,23 @@ int main() {
 	char* instruction;
 	char* parameters[4];
 	short i = 0;
+
+	//create Memory pool
+	create_pool(12800);
+
+	//find labels
 	fp = fopen("input2.txt", "r");
 	while(fgets(buff, 50, fp)) {
 		buff[strcspn(buff, "\r\n")] = 0;
-		printf("%s\n", buff);
+		tok = strtok(buff, " ");
+
+	}
+	fclose(fp);
+
+	fp = fopen("input2.txt", "r");
+	while(fgets(buff, 50, fp)) {
+		buff[strcspn(buff, "\r\n")] = 0;
+		printf("%d - %s\n", i, buff);
 		int j = 0;
 		tok = strtok(buff, " ");
 		instruction = tok;
@@ -63,21 +162,16 @@ int main() {
 		tok = strtok(NULL, ", ");
 		parameters[j] = tok;
 		j++;
-//		int num = fromAlphaToDec(binInstr, parameters);
-//		printf("%d\n", num);
-//		char* binNum = fromDecToBin(num);
-//		printf("%s\n", binNum);
-//		printf("%s\n", parameters[2]);
 		char* memoryLine = InstructionRegister(binInstr, parameters);
-		printf("%s\n", memoryLine);
-//		Memory(instruction, parameters, j, i);
+		printf("  %s\n", memoryLine);
+		Memory(memoryLine, i);
 		i++;
 	}
 	fclose(fp);
 	int k;
 	for(k = 0; k < i; k++) {
-		fetch();
+		fetch(fetchPC());
 		decode();
-		execute();
+//		execute();
 	}
 }

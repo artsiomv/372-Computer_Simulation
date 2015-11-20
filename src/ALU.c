@@ -6,3 +6,6 @@
  */
 
 
+void calculate() {
+	//TODO
+}

@@ -15,21 +15,21 @@ typedef struct register_str {
 } Register;
 
 	int $zero = 0;
-	int $at;
-	int $v0;
-	int $a0;
-	int $a1;
-	int $a2;
-	int $t0;
-	int $t1;
-	int $t2;
-	int $s0;
-	int $s1;
-	int $s2;
-	int $k0;
-	int $sp;
-	int $fp;
-	int $ra;
+	int $at = 0;
+	int $v0 = 0;
+	int $a0 = 0;
+	int $a1 = 0;
+	int $a2 = 0;
+	int $t0 = 0;
+	int $t1 = 0;
+	int $t2 = 0;
+	int $s0 = 0;
+	int $s1 = 0;
+	int $s2 = 0;
+	int $k0 = 0;
+	int $sp = 0;
+	int $fp = 0;
+	int $ra = 0;
 
 int loadTo(char* param[]) {
 	char* ptr;
@@ -83,7 +83,7 @@ int loadTo(char* param[]) {
 	return 0;
 }
 
-int loadFrom(char* reg) {
-
+int loadFrom(int reg) {
+	//TODO
 	return 0;
 }

@@ -5,4 +5,12 @@
  *      Author: Artiom
  */
 
+int counter = 0;
+int fetchPC() {
+	return counter++;
+}
+
+int getPC() {
+	return counter;
+}
 
