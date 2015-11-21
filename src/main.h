@@ -12,6 +12,7 @@ int Memory(char* memoryLine, int lines);
 char* InstructionRegister(char* instruction, char* params[]);
 void create_pool(int size);
 struct instruction getMemory(int i);
+int ALU(int A, int B, int func);
 
 int fetchPC();
 int getPC();

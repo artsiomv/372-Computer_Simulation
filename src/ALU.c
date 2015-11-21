@@ -5,24 +5,17 @@
  *      Author: Artiom
  */
 
-int ALU()
+int ALU(int A, int B, int func)
 {
-	//A and B are values passed into the ALU
-	int A = 0;
-	int B = 0;
-	//opcode passed into the ALU (probably will not need it, not sure)
-	int opcode = 0000;
-	//the output from the ALU
-	int aluOut = 0;
 	//output from the calculations
 	int answer;
+
 	//function passed into ALU
 	/*
 	 * We need to pass in the func, (00 for ADD, 01 for NAND, 10 for A - B, and 11 for A + 1)
 	 * We need the func to be passed in because that way we know what operations we are doing
 	 * Im not sure how to pass in value to this "class"
 	 */
-	int func;
 
 	//ADD
 	if (func == 0)
@@ -32,6 +25,7 @@ int ALU()
 	//NAND
 	else if (func == 1)
 	{
+		//have to get binary, then AND it, and then do NOT on it
 		//not sure how to do
 	}
 	//A-B
@@ -46,5 +40,5 @@ int ALU()
 		answer = A + 1;
 	}
 
-	return aluOut;
+	return answer;
 }

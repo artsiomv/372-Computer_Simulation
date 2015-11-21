@@ -21,6 +21,7 @@ void fetch(int line) {
 }
 
 int decode() {
+	int func = -1;
 //	int instruct = 0;
 //	int opcode = 0;
 //	int reg1 = 0;
@@ -62,13 +63,19 @@ int decode() {
 
 //	printf("%d\n", instruction.opcode);
 	if(instruction.opcode == 0) { 				//ADD
+		func = 0;
 		int opcode = instruction.opcode;
 		int reg1 = instruction.reg1;
 		int reg2 = instruction.reg2;
 		int unused = 0000000000000000;   //0x16
 		int reg3 = instruction.rest;
+		execute(opcode, reg1, reg2, reg3, func);
+	}
+	else if(instruction.opcode == 1) {			//NAND
+
 	}
 	else if(instruction.opcode == 10) {         //ADDI
+		func = 0;
 		char buffer[20];// = instruction.rest;
 		sprintf(buffer, "%d", instruction.rest);
 		int offSet = sizeof(buffer) - sizeof(instruction.rest);
@@ -92,14 +99,26 @@ int decode() {
 		int reg2 = instruction.reg2;
 		int field3 = num;
 
-		execute(opcode, reg1, reg2, field3);
+		execute(opcode, reg1, reg2, field3, func);
+	}
+	else if(instruction.opcode == 11) {			//LW
+
+	}
+	else if(instruction.opcode == 100) {		//SW
+
+	}
+	else if(instruction.opcode == 101) {		//BEQ
+
+	}
+	else if(instruction.opcode == 110) {		//JALR
+
 	}
 	return 0;
 }
 
-int execute(int opcode, int reg1, int reg2, field3) {
+void execute(int opcode, int reg1, int reg2, int reg3, int func) {
 	//TODO
-	return 0;
+	ALU(reg2, reg3, func);
 }
 
 char* getBinaryInstruction(char* inst) {
