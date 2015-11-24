@@ -171,18 +171,25 @@ char* InstructionRegister(char* instruction, char* params[]) {
 //		}
 
 		//assuming that the hex number will always be 0x42
-		char* hex = "00000000000001000010";
+		char* hex;
+		char* sign = "";
 		//TODO
 		char* parameters[2];
 		parameters[0] = strtok(params[1], "x");
-		parameters[0] = strtok(NULL, "(");
+		parameters[0] = strtok(parameters[0], "(");
+		int num = fromAlphaToDec(instruction, parameters[0]);
+		strcpy(hex, fromDecToBin(num));
 		parameters[1] = strtok(NULL, ")");
+
+		if(num >= 0) sign = "0";
+		if(num < 0) sign = "1";
 
 		char* binReg = getBinaryRegister(params[0]);
 		char* binReg2 = getBinaryRegister(parameters[1]);
 		strcpy(memLine, instruction);
 		strcat(memLine, binReg);
 		strcat(memLine, binReg2);
+		strcat(memLine, sign);
 		strcat(memLine, hex);
 		return memLine;
 	}
@@ -191,18 +198,25 @@ char* InstructionRegister(char* instruction, char* params[]) {
 	/*****************************************/
 	else if(strcmp("0100", instruction) == 0) { //SW
 		//assuming that the hex number will always be 0x42
-		char* hex = "00000000000001000010";
+		char* hex;
+		char* sign = "";
 		//TODO
 		char* parameters[2];
 		parameters[0] = strtok(params[1], "x");
-		parameters[0] = strtok(NULL, "(");
+		parameters[0] = strtok(parameters[0], "(");
+		int num = fromAlphaToDec(instruction, parameters[0]);
+		strcpy(hex, fromDecToBin(num));
 		parameters[1] = strtok(NULL, ")");
+
+		if(num >= 0) sign = "0";
+		if(num < 0) sign = "1";
 
 		char* binReg = getBinaryRegister(params[0]);
 		char* binReg2 = getBinaryRegister(parameters[1]);
 		strcpy(memLine, instruction);
 		strcat(memLine, binReg);
 		strcat(memLine, binReg2);
+		strcat(memLine, sign);
 		strcat(memLine, hex);
 		return memLine;
 	}
@@ -233,7 +247,7 @@ char* InstructionRegister(char* instruction, char* params[]) {
 	}
 	else if(strcmp("1011", instruction) == 0) { //DI
 	}
-	else if(strcmp("1100", instruction) == 0) { //RETi
+	else if(strcmp("1100", instruction) == 0) { //RETI
 	}
 	// NOOP..............
 	// .word 32..........

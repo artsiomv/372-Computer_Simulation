@@ -20,6 +20,22 @@ void fetch(int line) {
 
 }
 
+void execute(int opcode, int reg1, int reg2, int reg3, int func) {
+	//TODO
+	int ans;
+	printf("_____ %d\n", reg1);
+	if(opcode == 0) {
+		ans = ALU(loadFrom(reg2), loadFrom(reg3), func);
+	}
+	else if(opcode == 10) {
+		ans = ALU(reg2, reg3, func);
+
+	}
+	loadTo(reg1, ans);
+	printf(">>>> %d\n", ans);
+	printf("<<<< %d\n" , loadFrom(reg1));
+}
+
 int decode() {
 	int func = -1;
 //	int instruct = 0;
@@ -114,11 +130,6 @@ int decode() {
 
 	}
 	return 0;
-}
-
-void execute(int opcode, int reg1, int reg2, int reg3, int func) {
-	//TODO
-	ALU(reg2, reg3, func);
 }
 
 char* getBinaryInstruction(char* inst) {
