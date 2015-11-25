@@ -6,10 +6,9 @@
  */
 
 int counter = 0;
-int fetchPC() {
-	return counter++;
+void setPC(int num) {
+	counter = num;
 }
-
 int getPC() {
 	return counter;
 }

@@ -33,10 +33,9 @@ int ALU(int A, int B, int func)
 	{
 		answer = A - B;
 	}
-	//A + 1 (increment?)
+	//A + 1 (increment)
 	else if (func == 11)
 	{
-		//might need to be switched to A = A + 1;
 		answer = A + 1;
 	}
 

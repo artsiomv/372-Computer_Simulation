@@ -13,7 +13,7 @@ typedef struct register_str {
 	int numberStored;
 	char* binaryNumberStored;
 } Register;
-
+	//maybe make a random values?
 	int $zero = 0;
 	int $at = 0;
 	int $v0 = 0;
@@ -34,23 +34,22 @@ typedef struct register_str {
 int loadTo(int reg, int num) {
 	char* ptr;
 
-//	if(strcmp("$at", param[0]) == 0) {
-//		$at = strtol(param[1], &ptr, 10);
-//	}
+	if(reg == 0) {
+		//cant write here, this is $zero
+	}
 //	else if(strcmp("$v0", param[0]) == 0) {
 //		$v0 = strtol(param[1], &ptr, 10);
 //	}
-//	else if(strcmp("$a0", param[0]) == 0) {
-//		//TODO
-//		$a0 = strtol(param[1], &ptr, 10);
-//	}
+	else if(reg == 11) {
+		$a0 = num;
+	}
 //	else if(strcmp("$a1", param[0]) == 0) {
 //		$a1 = strtol(param[1], &ptr, 10);
 //	}
 //	else if(strcmp("$a2", param[0]) == 0) {
 //		$a2 = strtol(param[1], &ptr, 10);
 //	}
-	if(reg == 110) {
+	else if(reg == 110) {
 		$t0 = num;
 	}
 	else if(reg == 111) {
@@ -85,7 +84,13 @@ int loadTo(int reg, int num) {
 
 int loadFrom(int reg) {
 	//TODO
-	if(reg == 110) {
+	if(reg == 0) {
+		return $zero;
+	}
+	else if(reg == 11) {
+		return $a0;
+	}
+	else if(reg == 110) {
 		return $t0;
 	}
 	else if(reg == 111) {

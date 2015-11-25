@@ -11,12 +11,14 @@
 int Memory(char* memoryLine, int lines);
 char* InstructionRegister(char* instruction, char* params[]);
 void create_pool(int size);
-struct instruction getMemory(int i);
+char* getMemory(int i);
 int ALU(int A, int B, int func);
 int loadTo(int reg, int num);
 int loadFrom(int reg);
+void setStartingPoint(int num);
+char* fromDecToBin(int num);
 
-int fetchPC();
 int getPC();
+void setPC(int num);
 
 #endif /* MAIN_H_ */

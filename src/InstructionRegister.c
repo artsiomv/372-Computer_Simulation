@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
-//#include "InstructionRegister.h"
+#include "InstructionRegister.h"
 #include <stdlib.h>
 
 //typedef struct instruction_str {
@@ -20,7 +20,7 @@
 
 //Instruction* instr[20];
 
-int fromAlphaToDec(char* binInstr, char* parameter) {
+int fromAlphaToDec(char* parameter) {
 	char* pars = parameter;
 	int k;
 	int num = 0;
@@ -94,7 +94,12 @@ char* InstructionRegister(char* instruction, char* params[]) {
 //	for(int i = 0; i < 3; i++) {
 //		printf("AD %d - %s \n",i, params[i]);
 //	}
-
+	if(strcmp(".ORIG", instruction) == 0) {     //<<<<<<<<<<Might want to create a line in the memory
+		int orig = fromAlphaToDec(params[0]);
+//		setStartingPoint(orig);
+		setPC(orig);
+		return "";
+	}// else if (strcmp(".ORIG", instruction) == 0)
 	/*****************************************/
 	/******************ADD********************/
 	/*****************************************/
@@ -143,7 +148,7 @@ char* InstructionRegister(char* instruction, char* params[]) {
 			third = "0000000000000000000";
 		}
 		else {
-			num = fromAlphaToDec(instruction, params[2]);
+			num = fromAlphaToDec(params[2]);
 			third = fromDecToBin(num);
 		}
 		if(num >= 0) sign = "0";
@@ -170,17 +175,25 @@ char* InstructionRegister(char* instruction, char* params[]) {
 //			printf("ADDI %d - %s \n",i, params[i]);
 //		}
 
-		//assuming that the hex number will always be 0x42
-		char* hex;
+		char hex[20];
 		char* sign = "";
-		//TODO
-		char* parameters[2];
+//		//TODO
+//		printf("1\n");
+		static char* parameters[2];
 		parameters[0] = strtok(params[1], "x");
+//		printf("2\n");
 		parameters[0] = strtok(parameters[0], "(");
-		int num = fromAlphaToDec(instruction, parameters[0]);
-		strcpy(hex, fromDecToBin(num));
+//		printf("3\n");
+		int num = fromAlphaToDec(parameters[0]);
+//		printf("4\n");
+		char* in = fromDecToBin(num);
+		strcpy(hex, in);
 		parameters[1] = strtok(NULL, ")");
-
+//
+////		for(int i = 0; i < 2; i++) {
+////			printf("ADDIs %d - %s \n",i, params[i]);
+////		}
+//
 		if(num >= 0) sign = "0";
 		if(num < 0) sign = "1";
 
@@ -191,6 +204,7 @@ char* InstructionRegister(char* instruction, char* params[]) {
 		strcat(memLine, binReg2);
 		strcat(memLine, sign);
 		strcat(memLine, hex);
+
 		return memLine;
 	}
 	/*****************************************/
@@ -198,13 +212,13 @@ char* InstructionRegister(char* instruction, char* params[]) {
 	/*****************************************/
 	else if(strcmp("0100", instruction) == 0) { //SW
 		//assuming that the hex number will always be 0x42
-		char* hex;
+		char hex[20];
 		char* sign = "";
 		//TODO
-		char* parameters[2];
+		static char* parameters[2];
 		parameters[0] = strtok(params[1], "x");
 		parameters[0] = strtok(parameters[0], "(");
-		int num = fromAlphaToDec(instruction, parameters[0]);
+		int num = fromAlphaToDec(parameters[0]);
 		strcpy(hex, fromDecToBin(num));
 		parameters[1] = strtok(NULL, ")");
 

@@ -1,3 +1,7 @@
+.ORIG 2000
+LW $a0, 1000($zero)
 ADDI $t0, $zero, 5
-ADDI $t1, $zero, 7
-ADD $t2, $t0, $t1
+ADD $t2, $a0, $t0
+SW $t2, 1000($zero)
+LW $t0, 1000($zero)
+.END

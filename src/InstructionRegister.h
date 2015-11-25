@@ -8,8 +8,7 @@
 #ifndef INSTRUCTIONREGISTER_H_
 #define INSTRUCTIONREGISTER_H_
 
-int loadTo(char* param[]);
-int loadFrom(char* reg);
+void setPC(int num);
 
 
 #endif /* INSTRUCTIONREGISTER_H_ */
