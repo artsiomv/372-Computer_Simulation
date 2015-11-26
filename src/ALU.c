@@ -4,13 +4,14 @@
  *  Created on: Nov 3, 2015
  *      Author: Artiom
  */
-
+#include <string.h>
+#include <stdio.h>
 #include "main.h"
 
 int ALU(int A, int B, int func)
 {
 	//output from the calculations
-	void answer;
+	int answer;
 
 	//function passed into ALU
 	/*
@@ -27,10 +28,12 @@ int ALU(int A, int B, int func)
 	//NAND
 	else if (func == 1)
 	{
-		char*RegA = fromDectoBin(A);
-		char*RegB = fromDectoBin(B);
-		char*result;// = "";
+		char RegA[20];
+		strcpy(RegA, fromDecToBin(A));
+		char RegB[20];
+		strcpy(RegB, fromDecToBin(B));
 
+		char result[20];
 		int i;
 		for (i = 0; i < strlen(RegA); i++)
 		{
@@ -38,27 +41,26 @@ int ALU(int A, int B, int func)
 			{
 				if(RegB[i] == '1')
 				{
-//					result[i] = '0';
-					strcat(result[i], 0);
+					strcat(result, "0");
 				}
 				else if(RegB[i] == '0')
 				{
-					result[i] = '1';
+					strcat(result, "1");
 				}
 			}
 			else if(RegA[i] == '0')
 			{
 				if(RegB[i] == '1')
 				{
-					result[i] = '1';
+					strcat(result, "1");
 				}
 				else if(RegB[i] == '0')
 				{
-					result[i] = '0';
+					strcat(result, "1");
 				}
 			}
 		}
-		answer = result;
+		answer = fromBinToDec(result);
 	}
 	//A-B
 	else if (func == 10)

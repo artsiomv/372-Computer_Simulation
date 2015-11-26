@@ -1,14 +1,1 @@
-;hiiiii
-;teeeest
-;wooooooow
-LW $a0, 1000($zero) ;comment
-ADD $a1, $zero, $zero ;this is another comment
-;this is a line of comments
-ADDI $a1, $a1, 1 ;this is crap
-ADDI $a1, $a1, 3 ;double semi colon test aaaaaaaaaaaaaaaaaaaaaa 
-ADDI $a1, $a1, 5
-ADDI $a1, $a1, 7 ;sdifjsdoifjs
-;
-ADDI $a1, $a1, 9;
-SW $a1, 1000($zero);º¡¶¢
-.END
+ADDI $t0, $zero, -5
