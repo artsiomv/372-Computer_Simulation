@@ -21,46 +21,42 @@ int ALU(int A, int B, int func)
 	 */
 
 	//ADD
-	if (func == 0)
-	{
+	if (func == 0) {
 		answer = A + B;
 	}
 	//NAND
-	else if (func == 1)
-	{
+	else if (func == 1) {
 		char RegA[20];
+		memset(RegA, 0, sizeof(RegA));
 		strcpy(RegA, fromDecToBin(A));
 		char RegB[20];
+		memset(RegB, 0, sizeof(RegB));
 		strcpy(RegB, fromDecToBin(B));
-
 		char result[20];
+		memset(result, 0, sizeof(result));
 		int i;
-		for (i = 0; i < strlen(RegA); i++)
-		{
-			if(RegA[i] == '1')
-			{
-				if(RegB[i] == '1')
-				{
-					strcat(result, "0");
-				}
-				else if(RegB[i] == '0')
-				{
-					strcat(result, "1");
-				}
+		for (i = 0; i < strlen(RegA); i++) {
+			if(RegA[i] == '1') {
+				if(RegB[i] == '1') strcat(result, "0");
+				else if(RegB[i] == '0') strcat(result, "1");
 			}
-			else if(RegA[i] == '0')
-			{
-				if(RegB[i] == '1')
-				{
-					strcat(result, "1");
-				}
-				else if(RegB[i] == '0')
-				{
-					strcat(result, "1");
-				}
+			else if(RegA[i] == '0') {
+				if(RegB[i] == '1') strcat(result, "1");
+				else if(RegB[i] == '0') strcat(result, "1");
 			}
 		}
-		answer = fromBinToDec(result);
+		int sign = 0;
+		char RegC[20];
+		memset(RegC, 0, sizeof(RegC));
+		strcpy(RegC, "");
+
+		if(result[0] == '1') sign = 1;
+		int j;
+		for(j = 1; j < strlen(result); j++) {
+			if(result[j] == '1') strcat(RegC, "0");
+			else if(result[j] == '0') strcat(RegC, "1");
+		}
+		answer = fromBinToDec(RegC)*(-1);
 	}
 	//A-B
 	else if (func == 10)

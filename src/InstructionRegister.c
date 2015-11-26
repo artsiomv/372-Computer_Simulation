@@ -7,45 +7,54 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "InstructionRegister.h"
 #include <stdlib.h>
 
-//typedef struct instruction_str {
-//    char* inst;
-//	char* reg1;
-//	char* reg2;
-//	char* reg3;
-//	char* imm;
-//} Instruction;
-
-//Instruction* instr[20];
 int fromAlphaToDec(char* parameter) {
 	char* pars = parameter;
+	int negative = 0;
 	int k;
 	int num = 0;
 	int len = strlen(parameter);
 	for(k = 0; k < len-1; k++) {
-		int tempNum = (int)pars[k]-48;
-		num = num + tempNum;
-		num = num*10;
+		if(pars[k] == '-') {
+			negative = 1;
+		} else {
+			int tempNum = (int)pars[k]-48;
+			num = num + tempNum;
+			num = num*10;
+		}
 	}
 	int tempNum = (int)pars[k]-48;
 	num = num + tempNum;
+
+	if(negative == 1) num *= -1;
 	return num;
 }
 
 char* fromDecToBin(int num) {
 	static char bin[25];
 	memset(bin, 0, sizeof(bin));
+	int num2 = num;
+	if(num < 0) num2 = (num2 *(-1)) - 1;
 	int i = 262144;
 	while(i >= 1) {
-		if(num - i >= 0) {
+		if(num2 - i >= 0) {
 			strcat(bin, "1");
-			num = num - i;
-		} else {
-			strcat(bin, "0");
-		}
+			num2 = num2 - i;
+		} else strcat(bin, "0");
 		i /= 2;
+	}
+	if(num < 0) {
+		char result[25];
+		strcpy(result, "");
+		int i;
+		for(i = 0; i < strlen(bin); i++) {
+			if(bin[i] == '1') strcat(result, "0");
+			else if(bin[i] == '0') strcat(result, "1");
+		}
+		strcpy(bin, result);
 	}
 	return bin;
 }
@@ -98,32 +107,83 @@ char* getBinaryRegister(char* reg) {
 	return "";
 }
 
+void getRTypeInstructionInfo(char memLine[], char* instruction, char* params[]) {
+	char* unused = "0000000000000000";
+	char* binReg1 = getBinaryRegister(params[0]);
+	char* binReg2 = getBinaryRegister(params[1]);
+	char* binReg3 = getBinaryRegister(params[2]);
+
+	strcpy(memLine, instruction);
+	strcat(memLine, binReg1);
+	strcat(memLine, binReg2);
+	strcat(memLine, unused);
+	strcat(memLine, binReg3);
+}
+
+void getITypeInstructionInfoLWSW(char memLine[], char* instruction, char* params[]) {
+	char hex[20];
+	char* sign = "";
+
+	static char* parameters[2];
+	parameters[0] = strtok(params[1], "x");
+	parameters[0] = strtok(parameters[0], "(");
+
+	int num = fromAlphaToDec(parameters[0]);
+	char* in = fromDecToBin(num);
+	strcpy(hex, in);
+	parameters[1] = strtok(NULL, ")");
+
+	if(num >= 0) sign = "0";
+	if(num < 0) sign = "1";
+
+	char* binReg = getBinaryRegister(params[0]);
+	char* binReg2 = getBinaryRegister(parameters[1]);
+	strcpy(memLine, instruction);
+	strcat(memLine, binReg);
+	strcat(memLine, binReg2);
+	strcat(memLine, sign);
+	strcat(memLine, hex);
+}
+
+void getADDIInstructionInfo(char memLine[], char* instruction, char* params[]) {
+	char* sign = "";
+	char* binReg1 = getBinaryRegister(params[0]);
+	char* binReg2 = getBinaryRegister(params[1]);
+	char* third = "";
+	int num = 0;
+	if(strcmp(params[2], "$zero") == 0) {
+		third = "0000000000000000000";
+	}
+	else {
+		num = fromAlphaToDec(params[2]);
+		printf("%d\n", num);
+		third = fromDecToBin(num);
+		printf("%s\n", third);
+	}
+	if(num >= 0) sign = "0";
+	if(num < 0) sign = "1";
+
+	strcpy(memLine, instruction);
+	strcat(memLine, binReg1);
+	strcat(memLine, binReg2);
+	strcat(memLine, sign);
+	strcat(memLine, third);
+}
+
 char* InstructionRegister(char* instruction, char* params[]) {
 	static char memLine[33] = "";
-//	Instruction* instr[2];
-//	for(int i = 0; i < 3; i++) {
-//		printf("AD %d - %s \n",i, params[i]);
-//	}
+	//.ORIG
 	if(strcmp(".ORIG", instruction) == 0) {
 		int orig = fromAlphaToDec(params[0]);
 		setPC(orig);
 		return "";
 	}
+
 	/*****************************************/
 	/******************ADD********************/
 	/*****************************************/
 	if(strcmp("0000", instruction) == 0) { //ADD
-		char* unused = "0000000000000000";
-		char* binReg1 = getBinaryRegister(params[0]);
-		char* binReg2 = getBinaryRegister(params[1]);
-		char* binReg3 = getBinaryRegister(params[2]);
-
-		strcpy(memLine, instruction);
-		strcat(memLine, binReg1);
-		strcat(memLine, binReg2);
-		strcat(memLine, unused);
-		strcat(memLine, binReg3);
-
+		getRTypeInstructionInfo(memLine, instruction, params);
 		return memLine;
 	}
 
@@ -131,115 +191,28 @@ char* InstructionRegister(char* instruction, char* params[]) {
 	/******************NAND*******************/
 	/*****************************************/
 	else if(strcmp("0001", instruction) == 0) { //NAND
-		char* unused = "0000000000000000";
-		char* binReg1 = getBinaryRegister(params[0]);
-		char* binReg2 = getBinaryRegister(params[1]);
-		char* binReg3 = getBinaryRegister(params[2]);
-
-		strcpy(memLine, instruction);
-		strcat(memLine, binReg1);
-		strcat(memLine, binReg2);
-		strcat(memLine, unused);
-		strcat(memLine, binReg3);
-
+		getRTypeInstructionInfo(memLine, instruction, params);
 		return memLine;
 	}
 	/*****************************************/
 	/******************ADDI*******************/
 	/*****************************************/
 	else if(strcmp("0010", instruction) == 0) { //ADDI
-		char* sign = "";
-		char* binReg1 = getBinaryRegister(params[0]);
-		char* binReg2 = getBinaryRegister(params[1]);
-		char* third = "";
-		int num = 0;
-		if(strcmp(params[2], "$zero") == 0) {
-			third = "0000000000000000000";
-		}
-		else {
-			num = fromAlphaToDec(params[2]);
-			third = fromDecToBin(num);
-		}
-		if(num >= 0) sign = "0";
-		if(num < 0) sign = "1";
-
-		strcpy(memLine, instruction);
-		strcat(memLine, binReg1);
-		strcat(memLine, binReg2);
-		strcat(memLine, sign);
-		strcat(memLine, third);
-
-//		for(int i = 0; i < sizeof(memLine); i++) {
-//			printf("ADDI %d - %c \n",i, memLine[i]);
-//		}
-
+		getADDIInstructionInfo(memLine, instruction, params);
 		return memLine;
 	}
 	/*****************************************/
 	/*******************LW********************/
 	/*****************************************/
 	else if(strcmp("0011", instruction) == 0) { //LW
-
-//		for(int i = 0; i < 2; i++) {
-//			printf("ADDI %d - %s \n",i, params[i]);
-//		}
-
-		char hex[20];
-		char* sign = "";
-//		//TODO
-		static char* parameters[2];
-		parameters[0] = strtok(params[1], "x");
-//		printf("2\n");
-		parameters[0] = strtok(parameters[0], "(");
-//		printf("3\n");
-		int num = fromAlphaToDec(parameters[0]);
-//		printf("4\n");
-		char* in = fromDecToBin(num);
-		strcpy(hex, in);
-		parameters[1] = strtok(NULL, ")");
-//
-////		for(int i = 0; i < 2; i++) {
-////			printf("ADDIs %d - %s \n",i, params[i]);
-////		}
-//
-		if(num >= 0) sign = "0";
-		if(num < 0) sign = "1";
-
-		char* binReg = getBinaryRegister(params[0]);
-		char* binReg2 = getBinaryRegister(parameters[1]);
-		strcpy(memLine, instruction);
-		strcat(memLine, binReg);
-		strcat(memLine, binReg2);
-		strcat(memLine, sign);
-		strcat(memLine, hex);
-
+		getITypeInstructionInfoLWSW(memLine, instruction, params);
 		return memLine;
 	}
 	/*****************************************/
 	/*******************SW********************/
 	/*****************************************/
 	else if(strcmp("0100", instruction) == 0) { //SW
-		//assuming that the hex number will always be 0x42
-		char hex[20];
-		char* sign = "";
-		//TODO
-		static char* parameters[2];
-		parameters[0] = strtok(params[1], "x");
-		parameters[0] = strtok(parameters[0], "(");
-		int num = fromAlphaToDec(parameters[0]);
-		strcpy(hex, fromDecToBin(num));
-		parameters[1] = strtok(NULL, ")");
-
-		if(num >= 0) sign = "0";
-		if(num < 0) sign = "1";
-
-		char* binReg = getBinaryRegister(params[0]);
-		char* binReg2 = getBinaryRegister(parameters[1]);
-		strcpy(memLine, instruction);
-		strcat(memLine, binReg);
-		strcat(memLine, binReg2);
-		strcat(memLine, sign);
-		strcat(memLine, hex);
+		getITypeInstructionInfoLWSW(memLine, instruction, params);
 		return memLine;
 	}
 	/*****************************************/
@@ -262,16 +235,7 @@ char* InstructionRegister(char* instruction, char* params[]) {
 	/******************JALR*******************/
 	/*****************************************/
 	else if(strcmp("0110", instruction) == 0) { //JALR
+
 	}
-	else if(strcmp("0111", instruction) == 0) {
-	}
-	else if(strcmp("1010", instruction) == 0) { //EI
-	}
-	else if(strcmp("1011", instruction) == 0) { //DI
-	}
-	else if(strcmp("1100", instruction) == 0) { //RETI
-	}
-	// NOOP..............
-	// .word 32..........
 	return "";
 }

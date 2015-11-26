@@ -7,9 +7,123 @@ typedef struct structInstruction{
 	unsigned int opcode;
 	unsigned int reg1;
 	unsigned int reg2;
-	unsigned int rest;
+	unsigned int sign;
+	char rest[20];
 } Instruction;
 Instruction structInstruction;
+
+void execute(int opcode, int reg1, int reg2, int field3, int func) {
+	//TODO
+	int ans;
+	if(opcode == 0) { 			//ADD
+		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
+		loadTo(reg1, ans);
+	}
+	else if(opcode == 01) {		//NAND
+		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
+		loadTo(reg1, ans);
+	}
+	else if(opcode == 10) {		//ADDI
+		ans = ALU(loadFrom(reg2), field3, func);
+		loadTo(reg1, ans);
+	}
+	else if(opcode == 11) {		//LW
+		ans = ALU(loadFrom(reg2), field3, func);
+		loadTo(reg1, fromBinToDec(getMemory(ans)));
+	}
+	else if(opcode == 100) {		//SW
+		ans = ALU(loadFrom(reg2), field3, func);
+		Memory(fromDecToBin(loadFrom(reg1)), ans);
+	}
+}
+
+void getRType(int func) {
+	int opcode = structInstruction.opcode;
+	int reg1 = structInstruction.reg1;
+	int reg2 = structInstruction.reg2;
+	int unused = 000000000000000;   //16x0
+	int reg3 = 0;
+	int i;
+	for(i = 15; i < strlen(structInstruction.rest); i++) {
+		if(structInstruction.rest[i]== '1') reg3 = reg3 * 10 + 1;
+		else reg3 = reg3 * 10;
+	}
+	execute(opcode, reg1, reg2, reg3, func);
+}
+
+void getADDI(int func) {
+	char buffer[20];
+	int num = 0;
+	memset(buffer, 0, sizeof(buffer));
+	if(structInstruction.sign == 1) {
+		int j;
+		for(j = 0; j < strlen(structInstruction.rest); j++) {
+			if(structInstruction.rest[j] == '1') strcat(buffer, "0");
+			else if(structInstruction.rest[j] =='0') strcat(buffer, "1");
+		}
+		num = ((fromBinToDec(buffer)+1) *(-1));
+	} else {
+		int j;
+		for(j = 0; j < strlen(structInstruction.rest); j++) {
+			if(structInstruction.rest[j] == '1') strcat(buffer, "1");
+			else if(structInstruction.rest[j] =='0') strcat(buffer, "0");
+		}
+		num = fromBinToDec(buffer);
+	}
+	int opcode = structInstruction.opcode;
+	int reg1 = structInstruction.reg1;
+	int reg2 = structInstruction.reg2;
+	int field3 = num;
+	execute(opcode, reg1, reg2, field3, func);
+}
+
+void getLWSW(int func) {
+	char buffer[20];
+//	sprintf(buffer, "%s", structInstruction.rest);
+	int opcode = structInstruction.opcode;
+	int reg1 = structInstruction.reg1;
+	int reg2 = structInstruction.reg2;
+	int sign = structInstruction.sign;
+	char* rest = structInstruction.rest;
+
+//
+//
+//
+//	static char binRestReverse[20] = "";
+//	memset(binRestReverse, 0, sizeof(binRestReverse));
+//	while(num != 0) {
+//		if((num % 2) == 1) {
+//			num -= 1;
+//			num /= 10;
+//			if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "1");
+//			else strcat(binRestReverse, "1");
+//		} else {
+//			num /= 10;
+//			if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "0");
+//			else strcat(binRestReverse, "0");
+//		}
+//	}
+//	char binRest[20] = "";
+//	int i;
+//	for(i = 19; i > 0-1; i--) {
+//		if(binRestReverse[i] == '1') {
+//			if(strcmp(binRest, "") == 0) strcpy(binRest, "1");
+//			else strcat(binRest, "1");
+//		} else if(binRestReverse[i] == '0') {
+//			if(strcmp(binRest, "") == 0) strcpy(binRest, "0");
+//			else strcat(binRest, "0");
+//		}
+//	}
+
+	//find imm value
+	int num = 0;
+	int j;
+	for(j = 0; j < strlen(rest); j++) {
+		if(rest[j] == '1') num = num*2+1;
+		else num = num*2+0;
+	}
+	execute(opcode, reg1, reg2, num, func);
+}
 
 void fetch(int line) {
 	//load instruction from memory PC -> MAR
@@ -17,15 +131,14 @@ void fetch(int line) {
 	//increment PC, PC -> A; A+1 -> PC
 	setPC(ALU(getPC(), 0, 11));
 
-
-
-//	printf("-+++++_ %s\n", instruction);
-//	printf("- %04d\n", instruction.opcode);
 	int instruction = 0;
 	int opcode = 0;
 	int reg1 = 0;
 	int reg2 = 0;
-	int rest = 0;
+	int sign = 0;
+	char rest[20];
+	memset(rest, 0, sizeof(rest));
+	memset(structInstruction.rest, 0, sizeof(structInstruction.rest));
 	int i;
 	//get opcode
 	for(i = 0; i < 4; i++) {
@@ -46,193 +159,37 @@ void fetch(int line) {
 	}
 	structInstruction.reg2 = reg2;
 	//get the rest of the numbers
-	for(i = 12; i < 32; i++) {
-		if(lineOfMemory[i]== '1') rest = rest * 10 + 1;
-		else rest = rest * 10;
+	if(lineOfMemory[12]== '1') sign = 1;
+	else sign = 0;
+	structInstruction.sign = sign;
+	for(i = 13; i < 32; i++) {
+		if(lineOfMemory[i]== '1') strcat(rest, "1");
+		else strcat(rest, "0");
 	}
-	structInstruction.rest = rest;
-//	printf("-+++++_ %d\n", line);
-}
-
-void execute(int opcode, int reg1, int reg2, int field3, int func) {
-	//TODO
-	int ans;
-//	printf("_____ %d\n", opcode);
-	if(opcode == 0) { 			//ADD
-		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
-		loadTo(reg1, ans);
-	}
-	else if(opcode == 01) {		//NAND
-		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
-		loadTo(reg1, ans);
-	}
-	else if(opcode == 10) {		//ADDI
-		ans = ALU(loadFrom(reg2), field3, func);
-//		printf("<reg2> %d\n", loadFrom(reg2));
-//		printf("<ans> %d\n", ans);
-		loadTo(reg1, ans);
-//		printf("<reg1> %d\n", loadFrom(reg1));
-	}
-	else if(opcode == 11) {		//LW
-		ans = ALU(loadFrom(reg2), field3, func);
-		loadTo(reg1, fromBinToDec(getMemory(ans))); // (int)getMemory(ans)%10000); //<< make negative numbers
-	}
-	else if(opcode == 100) {		//SW
-		ans = ALU(loadFrom(reg2), field3, func);
-
-		Memory(fromDecToBin(loadFrom(reg1)), ans);
-	}
-//	printf(">>>FIELD3<<< %d\n", field3);
-//	printf(">>>>a1<<<<<< %d\n", loadFrom(110));
-//	printf("<<<<MEMx1000>>>>> %d\n" , fromBinToDec(getMemory(1000)));
+	strcpy(structInstruction.rest, rest);
 }
 
 int decode() {
 	int func = -1;
-//	printf("%d\n", structInstruction.opcode);
-	if(structInstruction.opcode == 0) { 				//ADD
+	if(structInstruction.opcode == 0) { 			//ADD
 		func = 0;
-		int opcode = structInstruction.opcode;
-		int reg1 = structInstruction.reg1;
-		int reg2 = structInstruction.reg2;
-		int unused = 0000000000000000;   //16x0
-		int reg3 = structInstruction.rest;
-		execute(opcode, reg1, reg2, reg3, func);
+		getRType(func);
 	}
-	else if(structInstruction.opcode == 1) {			//NAND
+	else if(structInstruction.opcode == 1) {		//NAND
 		func = 1;
-		int opcode = structInstruction.opcode;
-		int reg1 = structInstruction.reg1;
-		int reg2 = structInstruction.reg2;
-		int unused = 0000000000000000;   //16x0
-		int reg3 = structInstruction.rest;
-		execute(opcode, reg1, reg2, reg3, func);
+		getRType(func);
 	}
-	else if(structInstruction.opcode == 10) {         //ADDI
+	else if(structInstruction.opcode == 10) {       //ADDI
 		func = 0;
-		char buffer[20];// = structInstruction.rest;
-		memset(buffer, 0, sizeof(buffer));
-		sprintf(buffer, "%d", structInstruction.rest);
-		int offSet = 19-strlen(buffer);
-
-		char off[20] = "";
-		memset(off, 0, sizeof(off));
-		int i;
-		for(i = 0; i < offSet; i++) {
-			if(strcmp(off, "") == 0) strcpy(off, "0");
-			else strcat(off, "0");
-		}
-//		printf("\nADDI_DEC\n\n");
-//		printf("%s\n", buffer);
-//		printf("%s\n", off);
-		strcat(off, buffer);
-		//find imm value
-		int num = 0;
-		int j;
-		for(j = 0; j < strlen(off); j++) {
-			if(off[j] == '1') num = num*2+1;
-			else num = num*2+0;
-		}
-
-		int opcode = structInstruction.opcode;
-		int reg1 = structInstruction.reg1;
-		int reg2 = structInstruction.reg2;
-		int field3 = num;
-		execute(opcode, reg1, reg2, field3, func);
+		getADDI(func);
 	}
-	else if(structInstruction.opcode == 11) {			//LW
+	else if(structInstruction.opcode == 11) {		//LW
 		func = 0;
-		char buffer[20];// = structInstruction.rest;
-		sprintf(buffer, "%d", structInstruction.rest);
-		int opcode = structInstruction.opcode;
-		int reg1 = structInstruction.reg1;
-		int reg2 = structInstruction.reg2;
-		int num = structInstruction.rest;
-		static char binRestReverse[20] = "";
-		memset(binRestReverse, 0, sizeof(binRestReverse));
-		while(num != 0) {
-			if((num % 2) == 1) {
-				num -= 1;
-				num /= 10;
-				if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "1");
-				else strcat(binRestReverse, "1");
-			} else {
-				num /= 10;
-				if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "0");
-				else strcat(binRestReverse, "0");
-			}
-		}
-		char binRest[20] = "";
-		int i;
-		for(i = 19; i > 0-1; i--) {
-			if(binRestReverse[i] == '1') {
-				if(strcmp(binRest, "") == 0) strcpy(binRest, "1");
-				else strcat(binRest, "1");
-			} else if(binRestReverse[i] == '0') {
-				if(strcmp(binRest, "") == 0) strcpy(binRest, "0");
-				else strcat(binRest, "0");
-			}
-		}
-
-		//find imm value
-		int num2 = 0;
-		int j;
-		for(j = 0; j < strlen(binRest); j++) {
-			if(binRest[j] == '1') num2 = num2*2+1;
-			else num2 = num2*2+0;
-		}
-
-//		printf("^^^^^^^^^ %d\n", num2);
-//		int offset = num;
-//		printf("ooo %d\n", offset);
-		execute(opcode, reg1, reg2, num2, func);
+		getLWSW(func);
 	}
 	else if(structInstruction.opcode == 100) {		//SW
 		func = 0;
-		char buffer[20];// = structInstruction.rest;
-		sprintf(buffer, "%d", structInstruction.rest);
-		int opcode = structInstruction.opcode;
-		int reg1 = structInstruction.reg1;
-		int reg2 = structInstruction.reg2;
-		int num = structInstruction.rest;
-
-		static char binRestReverse[20] = "";
-		while(num != 0) {
-			if((num % 2) == 1) {
-				num -= 1;
-				num /= 10;
-				if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "1");
-				else strcat(binRestReverse, "1");
-			} else {
-				num /= 10;
-				if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "0");
-				else strcat(binRestReverse, "0");
-			}
-		}
-		char binRest[20] = "";
-		int i;
-		for(i = 19; i > 0-1; i--) {
-			if(binRestReverse[i] == '1') {
-				if(strcmp(binRest, "") == 0) strcpy(binRest, "1");
-				else strcat(binRest, "1");
-			} else if(binRestReverse[i] == '0') {
-				if(strcmp(binRest, "") == 0) strcpy(binRest, "0");
-				else strcat(binRest, "0");
-			}
-		}
-
-		//find imm value
-		int num2 = 0;
-		int j;
-		for(j = 0; j < strlen(binRest); j++) {
-			if(binRest[j] == '1') num2 = num2*2+1;
-			else num2 = num2*2+0;
-		}
-
-//		printf("^^^^^^^^^ %d\n", num2);
-//		int offset = num;
-//		printf("ooo %d\n", offset);
-		execute(opcode, reg1, reg2, num2, func);
+		getLWSW(func);
 	}
 	else if(structInstruction.opcode == 101) {		//BEQ
 
@@ -298,7 +255,7 @@ int main() {
 			buff[strcspn(buff, "\r\n;")] = 0;
 			int j = 0;
 			tok = strtok(buff,"\t");
-//			printf("-. %d - %s\n", i, b);
+			printf("%d - %s\n", i, buff);
 			tok = strtok(tok, " ");
 			instruction = tok;
 			char* binInstr = getBinaryInstruction(tok);
@@ -317,9 +274,7 @@ int main() {
 //			}
 			j++;
 			if(strcmp(binInstr, ".ORIG") == 0) {
-				printf("T");
 				InstructionRegister(instruction, parameters);
-				printf("T");
 			}
 			else if (strcmp(binInstr, ".END") == 0) {
 				break;
@@ -336,6 +291,11 @@ int main() {
 	int k;
 	for(k = 0; k < i; k++) {
 		fetch(getPC());
+
 		decode();
+		printf("$a0 %d\n", loadFrom(11));
+		printf("$a1 %d\n", loadFrom(100));
+		printf("$a2 %d\n", loadFrom(101));
+		printf("MEM_1000 %s\n", getMemory(1000));
 	}
 }

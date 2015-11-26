@@ -35,7 +35,7 @@ int loadTo(int reg, int num) {
 	char* ptr;
 
 	if(reg == 0) {
-		//cant write here, this is $zero
+		//can't write here, this is $zero
 	}
 	else if(reg == 1) {
 		$at = num;
@@ -86,7 +86,6 @@ int loadTo(int reg, int num) {
 }
 
 int loadFrom(int reg) {
-	//TODO
 	if(reg == 0) {
 		return $zero;
 	}
