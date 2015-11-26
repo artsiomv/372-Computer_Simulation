@@ -37,18 +37,21 @@ int loadTo(int reg, int num) {
 	if(reg == 0) {
 		//cant write here, this is $zero
 	}
-//	else if(strcmp("$v0", param[0]) == 0) {
-//		$v0 = strtol(param[1], &ptr, 10);
-//	}
+	else if(reg == 1) {
+		$at = num;
+	}
+	else if(reg == 10) {
+		$v0 = num;
+	}
 	else if(reg == 11) {
 		$a0 = num;
 	}
-//	else if(strcmp("$a1", param[0]) == 0) {
-//		$a1 = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$a2", param[0]) == 0) {
-//		$a2 = strtol(param[1], &ptr, 10);
-//	}
+	else if(reg == 100) {
+		$a1 = num;
+	}
+	else if(reg == 101) {
+		$a2 = num;
+	}
 	else if(reg == 110) {
 		$t0 = num;
 	}
@@ -58,27 +61,27 @@ int loadTo(int reg, int num) {
 	else if(reg == 1000) {
 		$t2 = num;
 	}
-//	else if(strcmp("$s0", param[0]) == 0) {
-//		$s0 = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$s1", param[0]) == 0) {
-//		$s1 = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$s2", param[0]) == 0) {
-//		$s2 = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$k0", param[0]) == 0) {
-//		$k0 = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$sp", param[0]) == 0) {
-//		$sp = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$fp", param[0]) == 0) {
-//		$fp = strtol(param[1], &ptr, 10);
-//	}
-//	else if(strcmp("$ra", param[0]) == 0) {
-//		$ra = strtol(param[1], &ptr, 10);
-//	}
+	else if(reg == 1001) {
+		$s0 = num;
+	}
+	else if(reg == 1010) {
+		$s1 = num;
+	}
+	else if(reg == 1011) {
+		$s2 = num;
+	}
+	else if(reg == 1100) {
+		$k0 = num;
+	}
+	else if(reg == 1101) {
+		$sp = num;
+	}
+	else if(reg == 1110) {
+		$fp = num;
+	}
+	else if(reg == 1111) {
+		$ra = num;
+	}
 	return 0;
 }
 
@@ -87,8 +90,20 @@ int loadFrom(int reg) {
 	if(reg == 0) {
 		return $zero;
 	}
+	else if(reg == 1) {
+		return $at;
+	}
+	else if(reg == 10) {
+		return $v0;
+	}
 	else if(reg == 11) {
 		return $a0;
+	}
+	else if(reg == 100) {
+		return $a1;
+	}
+	else if(reg == 101) {
+		return $a2;
 	}
 	else if(reg == 110) {
 		return $t0;
@@ -98,6 +113,27 @@ int loadFrom(int reg) {
 	}
 	else if(reg == 1000) {
 		return $t2;
+	}
+	else if(reg == 1001) {
+		return $s0;
+	}
+	else if(reg == 1010) {
+		return $s1;
+	}
+	else if(reg == 1011) {
+		return $s2;
+	}
+	else if(reg == 1100) {
+		return $k0;
+	}
+	else if(reg == 1101) {
+		return $sp;
+	}
+	else if(reg == 1110) {
+		return $fp;
+	}
+	else if(reg == 1111) {
+		return $ra;
 	}
 	return 0;
 }

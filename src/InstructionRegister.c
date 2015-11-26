@@ -19,7 +19,6 @@
 //} Instruction;
 
 //Instruction* instr[20];
-
 int fromAlphaToDec(char* parameter) {
 	char* pars = parameter;
 	int k;
@@ -49,6 +48,16 @@ char* fromDecToBin(int num) {
 		i /= 2;
 	}
 	return bin;
+}
+
+int fromBinToDec(char* bin) {
+	//find imm value
+	int num = 0;
+	for(int i = 0; i < strlen(bin); i++) {
+		if(bin[i] == '1') num = num*2+1;
+		else num = num*2+0;
+	}
+	return num;
 }
 
 char* getBinaryRegister(char* reg) {
@@ -94,12 +103,11 @@ char* InstructionRegister(char* instruction, char* params[]) {
 //	for(int i = 0; i < 3; i++) {
 //		printf("AD %d - %s \n",i, params[i]);
 //	}
-	if(strcmp(".ORIG", instruction) == 0) {     //<<<<<<<<<<Might want to create a line in the memory
+	if(strcmp(".ORIG", instruction) == 0) {
 		int orig = fromAlphaToDec(params[0]);
-//		setStartingPoint(orig);
 		setPC(orig);
 		return "";
-	}// else if (strcmp(".ORIG", instruction) == 0)
+	}
 	/*****************************************/
 	/******************ADD********************/
 	/*****************************************/
@@ -178,7 +186,6 @@ char* InstructionRegister(char* instruction, char* params[]) {
 		char hex[20];
 		char* sign = "";
 //		//TODO
-//		printf("1\n");
 		static char* parameters[2];
 		parameters[0] = strtok(params[1], "x");
 //		printf("2\n");
