@@ -5,10 +5,12 @@
  *      Author: Artiom
  */
 
+#include "main.h"
+
 int ALU(int A, int B, int func)
 {
 	//output from the calculations
-	int answer;
+	void answer;
 
 	//function passed into ALU
 	/*
@@ -25,8 +27,38 @@ int ALU(int A, int B, int func)
 	//NAND
 	else if (func == 1)
 	{
-		//have to get binary, then AND it, and then do NOT on it
-		//not sure how to do
+		char*RegA = fromDectoBin(A);
+		char*RegB = fromDectoBin(B);
+		char*result;// = "";
+
+		int i;
+		for (i = 0; i < strlen(RegA); i++)
+		{
+			if(RegA[i] == '1')
+			{
+				if(RegB[i] == '1')
+				{
+//					result[i] = '0';
+					strcat(result[i], 0);
+				}
+				else if(RegB[i] == '0')
+				{
+					result[i] = '1';
+				}
+			}
+			else if(RegA[i] == '0')
+			{
+				if(RegB[i] == '1')
+				{
+					result[i] = '1';
+				}
+				else if(RegB[i] == '0')
+				{
+					result[i] = '0';
+				}
+			}
+		}
+		answer = result;
 	}
 	//A-B
 	else if (func == 10)
