@@ -8,6 +8,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
 #include "main.h"
 
 #include <stdint.h>
@@ -35,9 +37,10 @@ void create_pool(int size) {
     }
     root = heap;
     Heap* current = root;
-    for(int i = 0; i < 5000; i++) {
+    int i;
+    for(i = 0; i < 5000; i++) {
     	memset(current->inst[i].memoryLine, 0, sizeof(current->inst[i].memoryLine));
-    	strcpy(current->inst[i].memoryLine, fromDecToBin((abs((int)current->inst[i].memoryLine))%10000));
+    	strcpy(current->inst[i].memoryLine, fromDecToBin((abs((int)(uintptr_t)current->inst[i].memoryLine))%10000));
     }
 }
 

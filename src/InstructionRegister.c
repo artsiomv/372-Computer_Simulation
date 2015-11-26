@@ -53,7 +53,8 @@ char* fromDecToBin(int num) {
 int fromBinToDec(char* bin) {
 	//find imm value
 	int num = 0;
-	for(int i = 0; i < strlen(bin); i++) {
+	int i;
+	for(i = 0; i < strlen(bin); i++) {
 		if(bin[i] == '1') num = num*2+1;
 		else num = num*2+0;
 	}

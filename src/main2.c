@@ -117,7 +117,8 @@ int decode() {
 
 		char off[20] = "";
 		memset(off, 0, sizeof(off));
-		for(int i = 0; i < offSet; i++) {
+		int i;
+		for(i = 0; i < offSet; i++) {
 			if(strcmp(off, "") == 0) strcpy(off, "0");
 			else strcat(off, "0");
 		}
@@ -127,8 +128,9 @@ int decode() {
 		strcat(off, buffer);
 		//find imm value
 		int num = 0;
-		for(int i = 0; i < strlen(off); i++) {
-			if(off[i] == '1') num = num*2+1;
+		int j;
+		for(j = 0; j < strlen(off); j++) {
+			if(off[j] == '1') num = num*2+1;
 			else num = num*2+0;
 		}
 
@@ -161,7 +163,8 @@ int decode() {
 			}
 		}
 		char binRest[20] = "";
-		for(int i = 19; i > 0-1; i--) {
+		int i;
+		for(i = 19; i > 0-1; i--) {
 			if(binRestReverse[i] == '1') {
 				if(strcmp(binRest, "") == 0) strcpy(binRest, "1");
 				else strcat(binRest, "1");
@@ -173,8 +176,9 @@ int decode() {
 
 		//find imm value
 		int num2 = 0;
-		for(int i = 0; i < strlen(binRest); i++) {
-			if(binRest[i] == '1') num2 = num2*2+1;
+		int j;
+		for(j = 0; j < strlen(binRest); j++) {
+			if(binRest[j] == '1') num2 = num2*2+1;
 			else num2 = num2*2+0;
 		}
 
@@ -206,7 +210,8 @@ int decode() {
 			}
 		}
 		char binRest[20] = "";
-		for(int i = 19; i > 0-1; i--) {
+		int i;
+		for(i = 19; i > 0-1; i--) {
 			if(binRestReverse[i] == '1') {
 				if(strcmp(binRest, "") == 0) strcpy(binRest, "1");
 				else strcat(binRest, "1");
@@ -218,8 +223,9 @@ int decode() {
 
 		//find imm value
 		int num2 = 0;
-		for(int i = 0; i < strlen(binRest); i++) {
-			if(binRest[i] == '1') num2 = num2*2+1;
+		int j;
+		for(j = 0; j < strlen(binRest); j++) {
+			if(binRest[j] == '1') num2 = num2*2+1;
 			else num2 = num2*2+0;
 		}
 
