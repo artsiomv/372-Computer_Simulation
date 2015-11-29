@@ -29,11 +29,14 @@ int ALU(int A, int B, int func)
 		char RegA[20];
 		memset(RegA, 0, sizeof(RegA));
 		strcpy(RegA, fromDecToBin(A));
+
 		char RegB[20];
 		memset(RegB, 0, sizeof(RegB));
 		strcpy(RegB, fromDecToBin(B));
+
 		char result[20];
 		memset(result, 0, sizeof(result));
+
 		int i;
 		for (i = 0; i < strlen(RegA); i++) {
 			if(RegA[i] == '1') {
@@ -45,6 +48,7 @@ int ALU(int A, int B, int func)
 				else if(RegB[i] == '0') strcat(result, "1");
 			}
 		}
+
 		int sign = 0;
 		char RegC[20];
 		memset(RegC, 0, sizeof(RegC));
@@ -61,11 +65,117 @@ int ALU(int A, int B, int func)
 	//A-B
 	else if (func == 10)
 	{
-		answer = A - B;
+		char RegA[20];
+		memset(RegA, 0, sizeof(RegA));
+		strcpy(RegA, fromDecToBin(A));
+
+		char RegB[20];
+		memset(RegB, 0, sizeof(RegB));
+		strcpy(RegB, fromDecToBin(B));
+
+		char RegC[20];
+		memset(RegC, 0, sizeof(RegC));
+		strcpy(RegC, "");
+
+		char result[20];
+		memset(result, 0, sizeof(result));
+
+		int i;
+		for (i = 0; i < strlen(RegB); i++)
+		{
+			if(RegB[i] == '1')
+			{
+				strcat(result, "0");
+			}
+			else if(RegB[i] == '0')
+			{
+				strcat(result, "1");
+			}
+		}
+
+		int myNum = fromBinToDec(result);
+		myNum++;
+
+		strcpy(RegB, fromBinToDec(myNum));
+
+		char carry = '0';
+		int j;
+		for (j = 0; j < strlen(RegB); j++)
+		{
+			if (RegA[j] == '1' && RegB[j] == '1')
+			{
+				if (carry == '1') strcat(RegC, "1");
+				else if(carry == '0') strcat(RegC, "0");
+				carry = '1';
+			}
+			else if (RegA[j] == '1' && RegB[j] == '0')
+			{
+				if (carry == '1'){
+					strcat(RegC, "0");
+					carry = '1';
+				}
+				else if(carry == '0'){
+					strcat(RegC, "1");
+					carry = '0';
+				}
+			}
+			else if (RegA[j] == '0' && RegB[j] == '1')
+			{
+
+				/*
+				 * Ex: 1011 This is assuming we are carrying the first two bits at the top.
+				 *   - 0101
+				 *   _______
+				 *     0110
+				 */
+				if (carry == '1'){
+				strcat(RegC, "1");
+				carry = '0';
+				}
+				/*
+				 * Problem here:
+				 *
+				 * Ex: 0011
+				 *   - 0101
+				 *   _______
+				 *     ???? (1111 1110?)
+				 */
+				else if(carry == '0'){
+				strcat(RegC, "0");
+				carry = '0';
+				}
+			}
+			else if (RegA[j] == '0' && RegB[j] == '0')
+			{
+				if (carry == '1'){
+				strcat(RegC, "1");
+				carry = '0';
+				}
+				else if(carry == '0'){
+				strcat(RegC, "0");
+				carry = '0';
+				}
+			}
+		}
+
+		answer = RegC;
 	}
 	//A + 1 (increment)
 	else if (func == 11)
 	{
+//		char RegA[20];
+//		memset(RegA, 0, sizeof(RegA));
+//		strcpy(RegA, fromDecToBin(A));
+//
+//		if (RegA[sizeof(RegA) - 1] == '0')
+//		{
+//			strcat(RegA, '1');
+//		}
+//		else if (RegA[sizeof(RegA) - 1] == '1')
+//		{
+//
+//		}
+
 		answer = A + 1;
 	}
 
