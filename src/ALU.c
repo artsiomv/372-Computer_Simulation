@@ -21,8 +21,66 @@ int ALU(int A, int B, int func)
 	 */
 
 	//ADD
-	if (func == 0) {
-		answer = A + B;
+	if (func == 0)
+	{
+		char RegA[20];
+		memset(RegA, 0, sizeof(RegA));
+		strcpy(RegA, fromDecToBin(A));
+
+		char RegB[20];
+		memset(RegB, 0, sizeof(RegB));
+		strcpy(RegB, fromDecToBin(B));
+
+		char RegC[20];
+		memset(RegC, 0, sizeof(RegC));
+		strcpy(RegC, "");
+
+		char result[20];
+		memset(result, 0, sizeof(result));
+
+		char carry = '0';
+		int j;
+		for (j = 0; j < strlen(RegB); j++)
+		{
+			if (RegA[j] == '1' && RegB[j] == '1')
+			{
+				if (carry == '1')
+				{
+					strcat(RegC, "1");
+					carry = '1';
+				}
+				else if (carry == '0')
+				{
+					strcat(RegC, '0');
+					carry = '1';
+				}
+			}
+			else if ((RegA[j] == '1' && RegB[j] == '0') || (RegA[j] == '0' && RegB[j] == '1'))
+			{
+				if (carry == '1')
+				{
+					strcat(RegC, "0");
+					carry = '1';
+				}
+				else if (carry == '0')
+				{
+					strcat(RegC, '1');
+					carry = '0';
+				}
+			}
+			else if (RegA[j] == '0' && RegB[j] == '0')
+			{
+				if (carry == '1'){
+				strcat(RegC, "1");
+				carry = '0';
+				}
+				else if(carry == '0'){
+				strcat(RegC, "0");
+				carry = '0';
+				}
+			}
+		}
+		answer = RegC;
 	}
 	//NAND
 	else if (func == 1) {
@@ -157,27 +215,58 @@ int ALU(int A, int B, int func)
 				}
 			}
 		}
-
 		answer = RegC;
 	}
 	//A + 1 (increment)
 	else if (func == 11)
 	{
-//		char RegA[20];
-//		memset(RegA, 0, sizeof(RegA));
-//		strcpy(RegA, fromDecToBin(A));
-//
-//		if (RegA[sizeof(RegA) - 1] == '0')
-//		{
-//			strcat(RegA, '1');
-//		}
-//		else if (RegA[sizeof(RegA) - 1] == '1')
-//		{
-//
-//		}
+		char RegA[20];
+		memset(RegA, 0, sizeof(RegA));
+		strcpy(RegA, fromDecToBin(A));
 
-		answer = A + 1;
+		char RegB[20];
+		memset(RegB, 0, sizeof(RegB));
+		strcpy(RegB, fromDecToBin(1));
+
+		char RegC[20];
+		memset(RegC, 0, sizeof(RegC));
+		strcpy(RegC, "");
+
+		char result[20];
+		memset(result, 0, sizeof(result));
+
+		char carry = '0';
+		int j;
+		for (j = 0; j < strlen(RegB); j++)
+		{
+			if (RegA[j] == '1' && RegB[j] == '1')
+			{
+				if (carry == '1')
+				{
+					strcat(RegC, "1");
+					carry = '1';
+				}
+				else if (carry == '0')
+				{
+					strcat(RegC, '0');
+					carry = '1';
+				}
+			}
+			else if (RegA[j] == '0' && RegB[j] == '1')
+			{
+				if (carry == '1')
+				{
+					strcat(RegC, "0");
+					carry = '1';
+				}
+				else if (carry == '0')
+				{
+					strcat(RegC, '1');
+					carry = '0';
+				}
+			}
+		}
+		answer = RegC;
 	}
-
 	return answer;
 }
