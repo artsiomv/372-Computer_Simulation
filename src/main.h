@@ -18,6 +18,7 @@ int loadFrom(int reg);
 void setStartingPoint(int num);
 char* fromDecToBin(int num);
 int fromBinToDec(char* bin);
+int getRegInfo(int num);
 
 int getPC();
 void setPC(int num);

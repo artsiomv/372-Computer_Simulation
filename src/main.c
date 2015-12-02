@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <regex.h>
+#include <ctype.h>
 #include "main.h"
 
 typedef struct structInstruction{
@@ -11,9 +12,9 @@ typedef struct structInstruction{
 	char rest[20];
 } Instruction;
 Instruction structInstruction;
+char fileInstructions[500][500];
 
 void execute(int opcode, int reg1, int reg2, int field3, int func) {
-	//TODO
 	int ans;
 	if(opcode == 0) { 			//ADD
 		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
@@ -52,8 +53,8 @@ void getRType(int func) {
 }
 
 void getADDI(int func) {
-	char buffer[20];
 	int num = 0;
+	char buffer[20];
 	memset(buffer, 0, sizeof(buffer));
 	if(structInstruction.sign == 1) {
 		int j;
@@ -86,35 +87,6 @@ void getLWSW(int func) {
 	int sign = structInstruction.sign;
 	char* rest = structInstruction.rest;
 
-//
-//
-//
-//	static char binRestReverse[20] = "";
-//	memset(binRestReverse, 0, sizeof(binRestReverse));
-//	while(num != 0) {
-//		if((num % 2) == 1) {
-//			num -= 1;
-//			num /= 10;
-//			if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "1");
-//			else strcat(binRestReverse, "1");
-//		} else {
-//			num /= 10;
-//			if(strcmp(binRestReverse, "") == 0) strcpy(binRestReverse, "0");
-//			else strcat(binRestReverse, "0");
-//		}
-//	}
-//	char binRest[20] = "";
-//	int i;
-//	for(i = 19; i > 0-1; i--) {
-//		if(binRestReverse[i] == '1') {
-//			if(strcmp(binRest, "") == 0) strcpy(binRest, "1");
-//			else strcat(binRest, "1");
-//		} else if(binRestReverse[i] == '0') {
-//			if(strcmp(binRest, "") == 0) strcpy(binRest, "0");
-//			else strcat(binRest, "0");
-//		}
-//	}
-
 	//find imm value
 	int num = 0;
 	int j;
@@ -124,13 +96,43 @@ void getLWSW(int func) {
 	}
 	execute(opcode, reg1, reg2, num, func);
 }
+int decode() {
+	int func = -1;
+	if(structInstruction.opcode == 0) { 			//ADD
+		func = 0;
+		getRType(func);
+	}
+	else if(structInstruction.opcode == 1) {		//NAND
+		func = 1;
+		getRType(func);
+	}
+	else if(structInstruction.opcode == 10) {       //ADDI
+		func = 0;
+		getADDI(func);
+	}
+	else if(structInstruction.opcode == 11) {		//LW
+		func = 0;
+		getLWSW(func);
+	}
+	else if(structInstruction.opcode == 100) {		//SW
+		func = 0;
+		getLWSW(func);
+	}
+	else if(structInstruction.opcode == 101) {		//BEQ
+
+	}
+	else if(structInstruction.opcode == 110) {		//JALR
+
+	}
+	return 0;
+}
 
 void fetch(int line) {
 	//load instruction from memory PC -> MAR
 	char* lineOfMemory = getMemory(line);
+//	printf("opcode4 %s \n", lineOfMemory);
 	//increment PC, PC -> A; A+1 -> PC
-	setPC(ALU(getPC(), 0, 11));
-
+	ALU(line, 0, 11);
 	int instruction = 0;
 	int opcode = 0;
 	int reg1 = 0;
@@ -167,40 +169,13 @@ void fetch(int line) {
 		else strcat(rest, "0");
 	}
 	strcpy(structInstruction.rest, rest);
-}
-
-int decode() {
-	int func = -1;
-	if(structInstruction.opcode == 0) { 			//ADD
-		func = 0;
-		getRType(func);
-	}
-	else if(structInstruction.opcode == 1) {		//NAND
-		func = 1;
-		getRType(func);
-	}
-	else if(structInstruction.opcode == 10) {       //ADDI
-		func = 0;
-		getADDI(func);
-	}
-	else if(structInstruction.opcode == 11) {		//LW
-		func = 0;
-		getLWSW(func);
-	}
-	else if(structInstruction.opcode == 100) {		//SW
-		func = 0;
-		getLWSW(func);
-	}
-	else if(structInstruction.opcode == 101) {		//BEQ
-
-	}
-	else if(structInstruction.opcode == 110) {		//JALR
-
-	}
-	return 0;
+	decode();
 }
 
 char* getBinaryInstruction(char* inst) {
+	for(int i = 0; i < strlen(inst); i++) {
+		inst[i] = toupper(inst[i]);
+	}
 	if(strcmp(".ORIG", inst) == 0) {
 		return ".ORIG";
 	} else if(strcmp(".END", inst) == 0) {
@@ -225,6 +200,18 @@ char* getBinaryInstruction(char* inst) {
 	return "";
 }
 
+void output(int maxLines) {
+	 FILE* outFile = fopen("output.txt", "w");
+	 fprintf(outFile, "$zero: %d\n$at: %d\n$v0: %d\n$a0: %d\n$a1: %d\n$a2: %d\n",
+			 getRegInfo(0), getRegInfo(1), getRegInfo(2), getRegInfo(3), getRegInfo(4), getRegInfo(5));
+	 fprintf(outFile,"$t0: %d\n$t1: %d\n$t2: %d\n$s0: %d\n$s1: %d\n",  getRegInfo(6), getRegInfo(7), getRegInfo(8), getRegInfo(9), getRegInfo(10));
+	 fprintf(outFile,  "$s2: %d\n$k0: %d\n$sp: %d\n$fp: %d\n$ra: %d\n",getRegInfo(11), getRegInfo(12), getRegInfo(13), getRegInfo(14), getRegInfo(15));
+
+	 for(int i = 0; i < maxLines; i++) {
+		 fprintf(outFile, "%s | %s\n", getMemory(2000+i), fileInstructions[i]);
+	 }
+}
+
 int main() {
 	FILE *fp;
 	char buff[500];
@@ -235,6 +222,7 @@ int main() {
 
 	//create Memory pool
 	create_pool(20000);
+
 
 	//find labels
 //	fp = fopen("input2.txt", "r");
@@ -250,52 +238,35 @@ int main() {
 
 //	char buff[30];
 	fp = fopen("input2.txt", "r");
-	while(fgets(buff, 500, fp) != NULL) { //use sscanf
+	while(fgets(buff, 500, fp) != NULL) {
 		if(*buff != ';') {
 			buff[strcspn(buff, "\r\n;")] = 0;
 			int j = 0;
 			tok = strtok(buff,"\t");
-			printf("%d - %s\n", i, buff);
+			strcpy(fileInstructions[i], buff);
 			tok = strtok(tok, " ");
 			instruction = tok;
 			char* binInstr = getBinaryInstruction(tok);
 			tok = strtok(NULL, ", ");
 			parameters[j] = tok;
 			j++;
-//			printf("t %s\n", tok);
 			tok = strtok(NULL, ", ");
 			parameters[j] = tok;
 			j++;
 			tok = strtok(NULL, ", ");
 			parameters[j] = tok;
-//			printf("t %s\n", tok);
-//			for(int i = 0; i < 4; i++) {
-//				printf("%d %s\n",i,  parameters[i]);
-//			}
 			j++;
-			if(strcmp(binInstr, ".ORIG") == 0) {
-				InstructionRegister(instruction, parameters);
-			}
-			else if (strcmp(binInstr, ".END") == 0) {
-				break;
-			}
-			else {
-				char* memoryLine = InstructionRegister(binInstr, parameters);
-				Memory(memoryLine, getPC()+i);
-				printf("  %s\n", memoryLine);
-				i++;
-			}
+			char* memoryLine = InstructionRegister(binInstr, parameters);
+			Memory(memoryLine, getPC()+i);
+			i++;
 		}
 	}
 	fclose(fp);
 	int k;
+	printf("Memory at 1000 before: %s\n", getMemory(1000));
 	for(k = 0; k < i; k++) {
 		fetch(getPC());
-
-		decode();
-		printf("$a0 %d\n", loadFrom(11));
-		printf("$a1 %d\n", loadFrom(100));
-		printf("$a2 %d\n", loadFrom(101));
-		printf("MEM_1000 %s\n", getMemory(1000));
 	}
+	printf("Memory at 1000  after: %s\n", getMemory(1000));
+	output(i);
 }

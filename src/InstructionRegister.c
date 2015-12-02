@@ -37,7 +37,7 @@ char* fromDecToBin(int num) {
 	static char bin[25];
 	memset(bin, 0, sizeof(bin));
 	int num2 = num;
-	if(num < 0) num2 = (num2 *(-1)) - 1;
+	if(num < 0) num2 = (num2 *(-1));
 	int i = 262144;
 	while(i >= 1) {
 		if(num2 - i >= 0) {
@@ -156,9 +156,7 @@ void getADDIInstructionInfo(char memLine[], char* instruction, char* params[]) {
 	}
 	else {
 		num = fromAlphaToDec(params[2]);
-		printf("%d\n", num);
 		third = fromDecToBin(num);
-		printf("%s\n", third);
 	}
 	if(num >= 0) sign = "0";
 	if(num < 0) sign = "1";
@@ -172,17 +170,24 @@ void getADDIInstructionInfo(char memLine[], char* instruction, char* params[]) {
 
 char* InstructionRegister(char* instruction, char* params[]) {
 	static char memLine[33] = "";
+	memset(memLine, 0, sizeof(memLine));
 	//.ORIG
 	if(strcmp(".ORIG", instruction) == 0) {
 		int orig = fromAlphaToDec(params[0]);
+		char *start = fromDecToBin(orig);
+		char* before = "0000000000000";
+		strcpy(memLine, before);
+		strcat(memLine, start);
 		setPC(orig);
-		return "";
+		return memLine;
 	}
-
+	else if(strcmp(".END", instruction) == 0){
+		return "00000000000000000000000000000000";
+	}
 	/*****************************************/
 	/******************ADD********************/
 	/*****************************************/
-	if(strcmp("0000", instruction) == 0) { //ADD
+	else if(strcmp("0000", instruction) == 0) { //ADD
 		getRTypeInstructionInfo(memLine, instruction, params);
 		return memLine;
 	}

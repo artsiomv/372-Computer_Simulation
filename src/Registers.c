@@ -136,3 +136,23 @@ int loadFrom(int reg) {
 	}
 	return 0;
 }
+
+int getRegInfo(int num) {
+	if(num == 0) return $zero;
+	if(num == 1) return $at;
+	if(num == 2) return $v0;
+	if(num == 3) return $a0;
+	if(num == 4) return $a1;
+	if(num == 5) return $a2;
+	if(num == 6) return $t0;
+	if(num == 7) return $t1;
+	if(num == 8) return $t2;
+	if(num == 9) return $s0;
+	if(num == 10) return $s1;
+	if(num == 11) return $s2;
+	if(num == 12) return $k0;
+	if(num == 13) return $sp;
+	if(num == 14) return $fp;
+	if(num == 15) return $ra;
+	else return -1;
+}
