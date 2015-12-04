@@ -78,6 +78,7 @@ char* fromDecToBin(int num) {
 	}
 	if(num < 0) {
 		char result[25];
+		memset(result, 0, sizeof(result));
 		strcpy(result, "");
 		int i;
 		for(i = 0; i < strlen(bin); i++) {
@@ -90,12 +91,24 @@ char* fromDecToBin(int num) {
 }
 
 int fromBinToDec(char* bin) {
-	//find imm value
 	int num = 0;
-	int i;
-	for(i = 0; i < strlen(bin); i++) {
-		if(bin[i] == '1') num = num*2+1;
-		else num = num*2+0;
+	if(bin[0] == '0') {
+		int i;
+		for(i = 0; i < strlen(bin); i++) {
+			if(bin[i] == '1') num = num*2+1;
+			else num = num*2+0;
+		}
+	}
+	else {
+		char result[25];
+		memset(result, 0, sizeof(result));
+		strcpy(result, "");
+		int i;
+		for(i = 0; i < strlen(bin); i++) {
+			if(bin[i] == '1') strcat(result, "0");
+			else if(bin[i] == '0') strcat(result, "1");
+		}
+		num = fromBinToDec(result)*(-1)+1;
 	}
 	return num;
 }
@@ -226,7 +239,9 @@ char* InstructionRegister(char* instruction, char* params[], int line) {
 	/******************NAND*******************/
 	/*****************************************/
 	else if(strcmp("0001", instruction) == 0) { //NAND
+		printf("THIS IS NAND IN IR\n");
 		getRTypeInstructionInfo(memLine, instruction, params);
+		printf("%s\n", memLine);
 		return memLine;
 	}
 	/*****************************************/
@@ -261,11 +276,15 @@ char* InstructionRegister(char* instruction, char* params[], int line) {
 		char* label;
 		for(i = 2000; i <= 2100; i++) {
 			if(strcmp(params[2], start->label[i].label) == 0) {
-				label = fromDecToBin(i-(line+2000));
+//				printf("%d %s\n",i,  start->label[i].label);
+//				printf("%d\n",  i-(line+2000+1));
+				label = fromDecToBin(i-(line+2000+1));
+//				printf("BIN LABEL %s\n", label);
 				break;
 			}
 		}
-		int labelNum = i-(line+2000);
+		int labelNum = i-(line+2000+1);
+//		printf("LABEL %d\n", labelNum);
 
 		if(labelNum > 0) sign = "0";
 		else sign = "1";

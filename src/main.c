@@ -19,15 +19,16 @@ int ZRegister = 0;
 
 void execute(int opcode, int reg1, int reg2, int field3, int func) {
 	int ans;
-	printf("OPCODE %d %d, %d, %d\n", opcode, reg1, reg2, field3);
+//	printf("OPCODE %d %d, %d, %d\n", opcode, reg1, reg2, field3);
 	if(opcode == 0) { 			//ADD
 //		printf("ADD\n");
 		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
 		loadTo(reg1, ans);
 	}
-	else if(opcode == 01) {		//NAND
-//		printf("NAND\n");
+	else if(opcode == 1) {		//NAND
+//		printf("NAND IN EX ALU\n");
 		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
+//		printf("NAND IN EX %d\n", ans);
 		loadTo(reg1, ans);
 	}
 	else if(opcode == 10) {		//ADDI
@@ -36,30 +37,42 @@ void execute(int opcode, int reg1, int reg2, int field3, int func) {
 		loadTo(reg1, ans);
 	}
 	else if(opcode == 11) {		//LW
+//		printf("F\n");
 		ans = ALU(loadFrom(reg2), field3, func);
+//		printf("%d\n", ans);
+//		printf("%s\n", getMemory(1000));
 		loadTo(reg1, fromBinToDec(getMemory(ans)));
+//		printf("R\n");
 	}
 	else if(opcode == 100) {		//SW
 		ans = ALU(loadFrom(reg2), field3, func);
+//		printf("SW %d\n", field3);
+//		printf("SW %d\n", loadFrom(reg2));
+//		printf("SW %d\n", loadFrom(reg1));
+//		printf("SW ANS %d\n", ans);
+//		printf("BIN %s\n", fromDecToBin(loadFrom(reg1)));
 		Memory(fromDecToBin(loadFrom(reg1)), ans);
 	}
 	else if(opcode == 101) {		//BEQ
-		printf("BEQ\n");
+//		printf("BEQ\n");
 		if(ZRegister == 0) {
 			ans = ALU(loadFrom(reg1), loadFrom(reg2), func);
-			printf("%d - %d = %d\n",loadFrom(reg1), loadFrom(reg2), ans);
+//			printf("%d\n",field3);
 			if(ans == 0) ZRegister = 1;
 		} else {
 			ans = ALU(getPC(), field3, func);
-			printf("LLLLLLLL %d\n", ans);
-			setPC(ans+1);
+//			printf("%d\n", getPC());
+//			printf("%d\n", field3);
+//			printf("%d\n", func);
+//			printf("LLLLLLLL %d\n", ans);
+			setPC(ans);
 		}
 	}
 	else if(opcode == 110) { 		//JALR
-		printf("JALR\n");
-		printf("%d\n", loadFrom(reg1));
+//		printf("JALR\n");
+//		printf("%d\n", loadFrom(reg1));
 		setPC(loadFrom(reg1));
-		printf("PC JALR %d\n", getPC());
+//		printf("PC JALR %d\n", getPC());
 		// set reg2 to the PC+1
 	}
 }
@@ -104,7 +117,6 @@ void getADDI(int func) {
 }
 
 void getLWSW(int func) {
-//	sprintf(buffer, "%s", structInstruction.rest);
 	int opcode = structInstruction.opcode;
 	int reg1 = structInstruction.reg1;
 	int reg2 = structInstruction.reg2;
@@ -117,6 +129,7 @@ void getLWSW(int func) {
 		if(rest[j] == '1') num = num*2+1;
 		else num = num*2+0;
 	}
+//	printf("H\n");
 	execute(opcode, reg1, reg2, num, func);
 }
 
@@ -125,12 +138,18 @@ void getBEQ(int func) {
 	int reg1 = structInstruction.reg1;
 	int reg2 = structInstruction.reg2;
 	char* rest = structInstruction.rest;
+
+//	printf("%d\n", opcode);
+//	printf("%d\n", reg1);
+//	printf("%d\n", reg2);
+//	printf("%s\n", rest);
 	int num = 0;
 	int j;
 	for(j = 0; j < strlen(rest); j++) {
 		if(rest[j] == '1') num = num*2+1;
 		else num = num*2+0;
 	}
+//	printf("NUM %d\n", num);
 	execute(opcode, reg1, reg2, num, func);
 	if(ZRegister == 1) {
 		func = 0;
@@ -149,17 +168,17 @@ void getJALR() {
 int decode() {
 	int func = -1;
 	if(structInstruction.opcode == 0) { 			//ADD
-		printf("ADD\n");
+//		printf("ADD\n");
 		func = 0;
 		getRType(func);
 	}
 	else if(structInstruction.opcode == 1) {		//NAND
-		printf("NAND\n");
+//		printf("NAND\n");
 		func = 1;
 		getRType(func);
 	}
 	else if(structInstruction.opcode == 10) {       //ADDI
-		printf("ADDI\n");
+//		printf("ADDI\n");
 		func = 0;
 		getADDI(func);
 	}
@@ -387,9 +406,15 @@ int main() {
 	int k = 0;
 	printf("Memory at 1000 before: %s\n", getMemory(1000));
 	while(getPC() < i+2000-1) {
-		printf("%d, %d\n", i, getPC());
+//		printf("%d\n", getPC());
 
 		fetch(getPC());
+//		printf("$a0: %d\n", getRegInfo(3));
+//		printf("$a1: %d\n", getRegInfo(4));
+//		printf("$a2: %d\n", getRegInfo(5));
+//		printf("$t0: %d\n", getRegInfo(6));
+//		printf("$t1: %d\n", getRegInfo(7));
+//		printf("$t2: %d\n", getRegInfo(8));
 	}
 	printf("Memory at 1000  after: %s\n", getMemory(1000));
 	output(i);

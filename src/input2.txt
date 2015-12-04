@@ -1,9 +1,15 @@
 	.ORIG 2000
-	ADDI $a0, $zero, 1
-	ADDI $a1, $zero, 1
-	ADDI $t0, $zero, 3
-	ADDI $a2, $zero, 2005
-LOOP: ADD $a0, $a0, $a1
-	BEQ $a0, $t0, DONE
-	JALR $a2, $zero
-DONE: .END
+	LW $a0, 1000($zero)
+	ADD $a1, $zero, $zero
+	ADDI $t0, $zero, 25	;our target value
+	ADDI $t1, $zero, 2006 ;the address to jump to
+	ADDI $t2, $t2, 1
+LOOP: ADD $a1, $a1, $t2 
+	ADDI $t2, $t2, 2
+	BEQ $t0, $a1, WRTE
+	JALR $t1, $t2
+WRTE: NAND $a2, $a1, $a1
+	ADDI $a2, $a2, 1
+	ADD $s0, $a0, $a2
+	SW $a0, 1000($zero)
+	.END

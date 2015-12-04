@@ -38,15 +38,8 @@ int ALU(int A, int B, int func)
 
 		char carry = '0';
 		int j;
-//		printf("ALUA %d\n", A);
-//		printf("ALUB %d\n", B);
-//		printf("ALUAB %s\n", RegA);
-//		printf("ALUBB %s\n", RegB);
-
-//		printf("%lu\n", strlen(RegB));
 		for (j = strlen(RegA)-1; j >= 0; j--)
 		{
-//			printf("%d\n", j);
 			if (RegA[j] == '1' && RegB[j] == '1')
 			{
 				if (carry == '1')
@@ -90,20 +83,16 @@ int ALU(int A, int B, int func)
 		char buffer[20];
 		memset(buffer, 0, sizeof(buffer));
 
-//		printf("RC %s\n", RegC);
 		if(RegC[0] == '1') {
 			int i;
 			for (i = 0; i < strlen(RegC); i++) {
 				if(RegC[i] == '1') buffer[i] = '0';
 				else buffer[i] = '1';
 			}
-//			printf("BF %s\n", buffer);
 			answer = (fromBinToDec(buffer)*(-1));
 		} else {
 			answer = fromBinToDec(RegC);
 		}
-//		printf("%s\n", RegC);
-//		printf("%d\n", answer);
 	}
 	//NAND
 	else if (func == 1) {
@@ -146,100 +135,85 @@ int ALU(int A, int B, int func)
 	//A-B
 	else if (func == 10)
 	{
-//		char RegA[20];
-//		memset(RegA, 0, sizeof(RegA));
-//		strcpy(RegA, fromDecToBin(A));
-//
-//		char RegB[20];
-//		memset(RegB, 0, sizeof(RegB));
-//		strcpy(RegB, fromDecToBin(B));
-//
-//		char RegC[20];
-//		memset(RegC, 0, sizeof(RegC));
-//		strcpy(RegC, "");
-//
-//		char result[20];
-//		memset(result, 0, sizeof(result));
-//
-//		int i;
-//		for (i = 0; i < strlen(RegB); i++)
-//		{
-//			if(RegB[i] == '1')
-//			{
-//				strcat(result, "0");
-//			}
-//			else if(RegB[i] == '0')
-//			{
-//				strcat(result, "1");
-//			}
-//		}
-//
-//		int myNum = fromBinToDec(result);
-//		myNum++;
-//
-//		strcpy(RegB, fromDecToBin(myNum));
-//
-//		char carry = '0';
-//		int j;
-//		for (j = 0; j < strlen(RegB); j++)
-//		{
-//			if (RegA[j] == '1' && RegB[j] == '1')
-//			{
-//				if (carry == '1') strcat(RegC, "1");
-//				else if(carry == '0') strcat(RegC, "0");
-//				carry = '1';
-//			}
-//			else if (RegA[j] == '1' && RegB[j] == '0')
-//			{
-//				if (carry == '1'){
-//					strcat(RegC, "0");
-//					carry = '1';
-//				}
-//				else if(carry == '0'){
-//					strcat(RegC, "1");
-//					carry = '0';
-//				}
-//			}
-//			else if (RegA[j] == '0' && RegB[j] == '1')
-//			{
-//
-//				/*
-//				 * Ex: 1011 This is assuming we are carrying the first two bits at the top.
-//				 *   - 0101
-//				 *   _______
-//				 *     0110
-//				 */
-//				if (carry == '1'){
-//				strcat(RegC, "1");
-//				carry = '0';
-//				}
-//				/*
-//				 * Problem here:
-//				 *
-//				 * Ex: 0011
-//				 *   - 0101
-//				 *   _______
-//				 *     ???? (1111 1110?)
-//				 */
-//				else if(carry == '0'){
-//				strcat(RegC, "0");
-//				carry = '0';
-//				}
-//			}
-//			else if (RegA[j] == '0' && RegB[j] == '0')
-//			{
-//				if (carry == '1'){
-//				strcat(RegC, "1");
-//				carry = '0';
-//				}
-//				else if(carry == '0'){
-//				strcat(RegC, "0");
-//				carry = '0';
-//				}
-//			}
-//		}
-//		answer = fromBinToDec(RegC)-1;
-		answer = A-B;
+		//case 1: if A > 0 and B > 0 --> negate B, then A+B
+
+		//case 2: if A > 0 but B < 0 --> negate B, then A+B
+
+		//case 3: if A < 0 but B > 0 --> negate B, then A+B
+
+		//case 4: if A < 0 and B < 0 --> negate B, then A+B
+
+		char RegA[20];
+		memset(RegA, 0, sizeof(RegA));
+		strcpy(RegA, fromDecToBin(A));
+
+		char RegB[20];
+		memset(RegB, 0, sizeof(RegB));
+		strcpy(RegB, fromDecToBin(B));
+
+		char RegC[20];
+		memset(RegC, 0, sizeof(RegC));
+		strcpy(RegC, "");
+
+		char result[20];
+		memset(result, 0, sizeof(result));
+
+		//negate B
+		int i;
+		for (i = 0; i < strlen(RegB); i++) {
+			if(RegB[i] == '1') strcat(result, "0");
+			else if(RegB[i] == '0') strcat(result, "1");
+		}
+
+		int myNum = fromBinToDec(result);
+
+		strcpy(RegB, fromDecToBin(myNum));
+
+		char carry = '0';
+		int j;
+		for (j = 0; j < strlen(RegB); j++)
+		{
+			if (RegA[j] == '1' && RegB[j] == '1')
+			{
+				if (carry == '1') strcat(RegC, "1");
+				else if(carry == '0') strcat(RegC, "0");
+				carry = '1';
+			}
+			else if (RegA[j] == '1' && RegB[j] == '0')
+			{
+				if (carry == '1'){
+					strcat(RegC, "0");
+					carry = '1';
+				}
+				else if(carry == '0'){
+					strcat(RegC, "1");
+					carry = '0';
+				}
+			}
+			else if (RegA[j] == '0' && RegB[j] == '1')
+			{
+				if (carry == '1'){
+					strcat(RegC, "0");
+					carry = '1';
+				}
+				else if(carry == '0'){
+					strcat(RegC, "1");
+					carry = '0';
+				}
+			}
+			else if (RegA[j] == '0' && RegB[j] == '0')
+			{
+				if (carry == '1'){
+					strcat(RegC, "1");
+					carry = '0';
+				}
+				else if(carry == '0'){
+					strcat(RegC, "0");
+					carry = '0';
+				}
+			}
+		}
+		answer = fromBinToDec(RegC);
 	}
 	//A + 1 (increment)
 	else if (func == 11)
@@ -300,8 +274,6 @@ int ALU(int A, int B, int func)
 		}
 		answer = fromBinToDec(RegC);
 		setPC(answer);
-//		printf("BEFORE %d \n", A);
-//		printf("AFTER  %d \n", answer);
 	}
 	return answer;
 }
