@@ -11,6 +11,36 @@
 #include "InstructionRegister.h"
 #include <stdlib.h>
 
+typedef struct label{
+	char label[10];
+} Label;
+typedef struct index{
+	Label label[5000];
+} LabelIndex;
+LabelIndex* start;
+
+void initialize() {
+	start = malloc(sizeof(LabelIndex));
+	LabelIndex* curr = start;
+	for(int t = 0; t < 5000; t++) {
+		memset(curr->label[t].label, 0, sizeof(curr->label[t].label));
+		strcpy(curr->label[t].label, "    ");
+	}
+}
+
+char* getLabel(int index) {
+	return start->label[index].label;
+}
+void setLabel(char* label, int index) {
+	strcpy(start->label[index].label, label);
+//	printf("SET %d %s\n",index, start->label[index].label);
+}
+
+int orig = 0;
+int getStartAddress() {
+	return orig;
+}
+
 int fromAlphaToDec(char* parameter) {
 	char* pars = parameter;
 	int negative = 0;
@@ -168,12 +198,12 @@ void getADDIInstructionInfo(char memLine[], char* instruction, char* params[]) {
 	strcat(memLine, third);
 }
 
-char* InstructionRegister(char* instruction, char* params[]) {
+char* InstructionRegister(char* instruction, char* params[], int line) {
 	static char memLine[33] = "";
 	memset(memLine, 0, sizeof(memLine));
 	//.ORIG
 	if(strcmp(".ORIG", instruction) == 0) {
-		int orig = fromAlphaToDec(params[0]);
+		orig = fromAlphaToDec(params[0]);
 		char *start = fromDecToBin(orig);
 		char* before = "0000000000000";
 		strcpy(memLine, before);
@@ -224,23 +254,41 @@ char* InstructionRegister(char* instruction, char* params[]) {
 	/******************BEQ********************/
 	/*****************************************/
 	else if(strcmp("0101", instruction) == 0) { //BEQ
-		//too hard to implement, needs further research
-		//TODO
-		char* parameters[2];
-//
+		char* sign = "";
 		char* binReg = getBinaryRegister(params[0]);
 		char* binReg2 = getBinaryRegister(params[1]);
+		int i;
+		char* label;
+		for(i = 2000; i <= 2100; i++) {
+			if(strcmp(params[2], start->label[i].label) == 0) {
+				label = fromDecToBin(i-(line+2000));
+				break;
+			}
+		}
+		int labelNum = i-(line+2000);
+
+		if(labelNum > 0) sign = "0";
+		else sign = "1";
 		strcpy(memLine, instruction);
 		strcat(memLine, binReg);
 		strcat(memLine, binReg2);
-		strcat(memLine, params[2]);
+		strcat(memLine, sign);
+		strcat(memLine, label);
 		return memLine;
 	}
 	/*****************************************/
 	/******************JALR*******************/
 	/*****************************************/
 	else if(strcmp("0110", instruction) == 0) { //JALR
+		char* binReg = getBinaryRegister(params[0]);
+		char* binReg2 = getBinaryRegister(params[1]);
+		char* unused = "00000000000000000000";
 
+		strcpy(memLine, instruction);
+		strcat(memLine, binReg);
+		strcat(memLine, binReg2);
+		strcat(memLine, unused);
+		return memLine;
 	}
 	return "";
 }

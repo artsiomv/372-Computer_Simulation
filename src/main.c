@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <regex.h>
@@ -13,18 +14,24 @@ typedef struct structInstruction{
 } Instruction;
 Instruction structInstruction;
 char fileInstructions[500][500];
+int startAddress = 0;
+int ZRegister = 0;
 
 void execute(int opcode, int reg1, int reg2, int field3, int func) {
 	int ans;
+	printf("OPCODE %d %d, %d, %d\n", opcode, reg1, reg2, field3);
 	if(opcode == 0) { 			//ADD
+//		printf("ADD\n");
 		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
 		loadTo(reg1, ans);
 	}
 	else if(opcode == 01) {		//NAND
+//		printf("NAND\n");
 		ans = ALU(loadFrom(reg2), loadFrom(field3), func);
 		loadTo(reg1, ans);
 	}
 	else if(opcode == 10) {		//ADDI
+//		printf("ADDI\n");
 		ans = ALU(loadFrom(reg2), field3, func);
 		loadTo(reg1, ans);
 	}
@@ -36,13 +43,31 @@ void execute(int opcode, int reg1, int reg2, int field3, int func) {
 		ans = ALU(loadFrom(reg2), field3, func);
 		Memory(fromDecToBin(loadFrom(reg1)), ans);
 	}
+	else if(opcode == 101) {		//BEQ
+		printf("BEQ\n");
+		if(ZRegister == 0) {
+			ans = ALU(loadFrom(reg1), loadFrom(reg2), func);
+			printf("%d - %d = %d\n",loadFrom(reg1), loadFrom(reg2), ans);
+			if(ans == 0) ZRegister = 1;
+		} else {
+			ans = ALU(getPC(), field3, func);
+			printf("LLLLLLLL %d\n", ans);
+			setPC(ans+1);
+		}
+	}
+	else if(opcode == 110) { 		//JALR
+		printf("JALR\n");
+		printf("%d\n", loadFrom(reg1));
+		setPC(loadFrom(reg1));
+		printf("PC JALR %d\n", getPC());
+		// set reg2 to the PC+1
+	}
 }
 
 void getRType(int func) {
 	int opcode = structInstruction.opcode;
 	int reg1 = structInstruction.reg1;
 	int reg2 = structInstruction.reg2;
-	int unused = 000000000000000;   //16x0
 	int reg3 = 0;
 	int i;
 	for(i = 15; i < strlen(structInstruction.rest); i++) {
@@ -79,12 +104,10 @@ void getADDI(int func) {
 }
 
 void getLWSW(int func) {
-	char buffer[20];
 //	sprintf(buffer, "%s", structInstruction.rest);
 	int opcode = structInstruction.opcode;
 	int reg1 = structInstruction.reg1;
 	int reg2 = structInstruction.reg2;
-	int sign = structInstruction.sign;
 	char* rest = structInstruction.rest;
 
 	//find imm value
@@ -96,17 +119,47 @@ void getLWSW(int func) {
 	}
 	execute(opcode, reg1, reg2, num, func);
 }
+
+void getBEQ(int func) {
+	int opcode = structInstruction.opcode;
+	int reg1 = structInstruction.reg1;
+	int reg2 = structInstruction.reg2;
+	char* rest = structInstruction.rest;
+	int num = 0;
+	int j;
+	for(j = 0; j < strlen(rest); j++) {
+		if(rest[j] == '1') num = num*2+1;
+		else num = num*2+0;
+	}
+	execute(opcode, reg1, reg2, num, func);
+	if(ZRegister == 1) {
+		func = 0;
+		execute(opcode, reg1, reg2, num, func);
+	}
+}
+
+void getJALR() {
+	int opcode = structInstruction.opcode;
+	int reg1 = structInstruction.reg1;
+	int reg2 = structInstruction.reg2;
+	char* unused = structInstruction.rest;
+	execute(opcode, reg1, reg2, 0, -1);
+}
+
 int decode() {
 	int func = -1;
 	if(structInstruction.opcode == 0) { 			//ADD
+		printf("ADD\n");
 		func = 0;
 		getRType(func);
 	}
 	else if(structInstruction.opcode == 1) {		//NAND
+		printf("NAND\n");
 		func = 1;
 		getRType(func);
 	}
 	else if(structInstruction.opcode == 10) {       //ADDI
+		printf("ADDI\n");
 		func = 0;
 		getADDI(func);
 	}
@@ -119,10 +172,11 @@ int decode() {
 		getLWSW(func);
 	}
 	else if(structInstruction.opcode == 101) {		//BEQ
-
+		func = 10;
+		getBEQ(func);
 	}
 	else if(structInstruction.opcode == 110) {		//JALR
-
+		getJALR();
 	}
 	return 0;
 }
@@ -133,7 +187,6 @@ void fetch(int line) {
 //	printf("opcode4 %s \n", lineOfMemory);
 	//increment PC, PC -> A; A+1 -> PC
 	ALU(line, 0, 11);
-	int instruction = 0;
 	int opcode = 0;
 	int reg1 = 0;
 	int reg2 = 0;
@@ -208,7 +261,7 @@ void output(int maxLines) {
 	 fprintf(outFile,  "$s2: %d\n$k0: %d\n$sp: %d\n$fp: %d\n$ra: %d\n",getRegInfo(11), getRegInfo(12), getRegInfo(13), getRegInfo(14), getRegInfo(15));
 
 	 for(int i = 0; i < maxLines; i++) {
-		 fprintf(outFile, "%s | %s\n", getMemory(2000+i), fileInstructions[i]);
+		 fprintf(outFile, "%d  %s | %s %s\n",2000+i, getMemory(2000+i),getLabel(2000+i), fileInstructions[i]);
 	 }
 }
 
@@ -217,54 +270,125 @@ int main() {
 	char buff[500];
 	char *tok;
 	char* instruction;
+	char* label;
 	char* parameters[4];
 	short i = 0;
-
+	char* p[4];
 	//create Memory pool
 	create_pool(20000);
+	initialize();
 
-
-	//find labels
-//	fp = fopen("input2.txt", "r");
-//	while(fgets(buff, 50, fp)) {
-//		if(*buff != ';') {
-//
-//		}
-//		buff[strcspn(buff, "\r\n")] = 0;
-//		tok = strtok(buff, " ");
-//
-//	}
-//	fclose(fp);
-
-//	char buff[30];
 	fp = fopen("input2.txt", "r");
 	while(fgets(buff, 500, fp) != NULL) {
 		if(*buff != ';') {
 			buff[strcspn(buff, "\r\n;")] = 0;
 			int j = 0;
-			tok = strtok(buff,"\t");
-			strcpy(fileInstructions[i], buff);
-			tok = strtok(tok, " ");
-			instruction = tok;
-			char* binInstr = getBinaryInstruction(tok);
-			tok = strtok(NULL, ", ");
-			parameters[j] = tok;
-			j++;
-			tok = strtok(NULL, ", ");
-			parameters[j] = tok;
-			j++;
-			tok = strtok(NULL, ", ");
-			parameters[j] = tok;
-			j++;
-			char* memoryLine = InstructionRegister(binInstr, parameters);
+			char* binInstr = "";
+			if(buff[0] != '\t') {
+				tok = strtok(buff,"\t");
+				label = strtok(buff, ":");
+				setLabel(label, 2000+i);
+				tok = strtok(NULL, " ");
+				instruction = tok;
+				binInstr = getBinaryInstruction(instruction);
+				tok = strtok(NULL, ", ");
+				parameters[j] = tok;
+				j++;
+				if(tok == NULL) {
+					strcpy(fileInstructions[i], instruction);
+				}
+				else {
+					tok = strtok(NULL, ", ");
+					parameters[j] = tok;
+					j++;
+					tok = strtok(NULL, ", ");
+					parameters[j] = tok;
+					j++;
+					char string[50];
+					memset(string, 0, sizeof(string));
+					strcpy(string, instruction);
+					strcat(string, " ");
+					for(int k = 0; k < j; k++) {
+						strcat(string, parameters[k]);
+						strcat(string, ", ");
+					}
+					strcpy(fileInstructions[i], string);
+				}
+			}
+			i++;
+		}
+	}
+	fclose(fp);
+
+	i = 0;
+	fp = fopen("input2.txt", "r");
+	while(fgets(buff, 500, fp) != NULL) {
+		if(*buff != ';') {
+			buff[strcspn(buff, "\r\n;")] = 0;
+//			printf("%s\n", buff);
+			int j = 0;
+			char* binInstr = "";
+			if(buff[0] == '\t') {
+				tok = strtok(buff,"\t");
+				strcpy(fileInstructions[i], tok);
+				tok = strtok(tok, " ");
+				instruction = tok;
+				binInstr = getBinaryInstruction(tok);
+				tok = strtok(NULL, ", ");
+				parameters[j] = tok;
+				j++;
+				tok = strtok(NULL, ", ");
+				parameters[j] = tok;
+				j++;
+				tok = strtok(NULL, ", ");
+				parameters[j] = tok;
+				j++;
+			}
+			else if(buff[0] != '\t') {
+				tok = strtok(buff,"\t");
+				label = strtok(buff, ":");
+				setLabel(label, 2000+i);
+				tok = strtok(NULL, " ");
+				instruction = tok;
+				binInstr = getBinaryInstruction(instruction);
+				tok = strtok(NULL, ", ");
+				parameters[j] = tok;
+				j++;
+				if(tok == NULL) {
+					strcpy(fileInstructions[i], instruction);
+				}
+				else {
+					tok = strtok(NULL, ", ");
+					parameters[j] = tok;
+					j++;
+					tok = strtok(NULL, ", ");
+					parameters[j] = tok;
+					j++;
+					char string[50];
+					memset(string, 0, sizeof(string));
+					strcpy(string, instruction);
+					strcat(string, " ");
+					for(int k = 0; k < j; k++) {
+						strcat(string, parameters[k]);
+						strcat(string, ", ");
+					}
+					strcpy(fileInstructions[i], string);
+				}
+			}
+//			printf("FI %s\n", fileInstructions[i]);
+
+			char* memoryLine = InstructionRegister(binInstr, parameters, i);
 			Memory(memoryLine, getPC()+i);
 			i++;
 		}
 	}
 	fclose(fp);
-	int k;
+	setPC(2001);
+	int k = 0;
 	printf("Memory at 1000 before: %s\n", getMemory(1000));
-	for(k = 0; k < i; k++) {
+	while(getPC() < i+2000-1) {
+		printf("%d, %d\n", i, getPC());
+
 		fetch(getPC());
 	}
 	printf("Memory at 1000  after: %s\n", getMemory(1000));

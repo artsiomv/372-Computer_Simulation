@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "main.h"
-
 #include <stdint.h>
 
 int32_t my_32bit_int;
