@@ -43,8 +43,8 @@ void create_pool(int size) {
 }
 
 void Memory(char* memoryLine, int lines) {
-	Heap* current = root;
-	strcpy(current->inst[lines].memoryLine, memoryLine);
+//	Heap* current = root;
+	strcpy(root->inst[lines].memoryLine, memoryLine);
 }
 
 char* getMemory(int i) {

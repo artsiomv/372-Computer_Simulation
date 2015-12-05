@@ -11,5 +11,5 @@ LOOP: ADD $a1, $a1, $t2
 WRTE: NAND $a2, $a1, $a1
 	ADDI $a2, $a2, 1
 	ADD $s0, $a0, $a2
-	SW $a0, 1000($zero)
+	SW $s0, 1000($zero)
 	.END

@@ -51,7 +51,9 @@ void execute(int opcode, int reg1, int reg2, int field3, int func) {
 //		printf("SW %d\n", loadFrom(reg1));
 //		printf("SW ANS %d\n", ans);
 //		printf("BIN %s\n", fromDecToBin(loadFrom(reg1)));
+//		printf("%s\n", getMemory(1000));
 		Memory(fromDecToBin(loadFrom(reg1)), ans);
+//		printf("%s\n", getMemory(1000));
 	}
 	else if(opcode == 101) {		//BEQ
 //		printf("BEQ\n");
@@ -415,6 +417,7 @@ int main() {
 //		printf("$t0: %d\n", getRegInfo(6));
 //		printf("$t1: %d\n", getRegInfo(7));
 //		printf("$t2: %d\n", getRegInfo(8));
+//		printf("$s0: %d\n", getRegInfo(9));
 	}
 	printf("Memory at 1000  after: %s\n", getMemory(1000));
 	output(i);
