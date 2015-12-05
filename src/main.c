@@ -299,7 +299,7 @@ int main() {
 	create_pool(20000);
 	initialize();
 
-	fp = fopen("input2.txt", "r");
+	fp = fopen("input.txt", "r");
 	while(fgets(buff, 500, fp) != NULL) {
 		if(*buff != ';') {
 			buff[strcspn(buff, "\r\n;")] = 0;
@@ -342,7 +342,7 @@ int main() {
 	fclose(fp);
 
 	i = 0;
-	fp = fopen("input2.txt", "r");
+	fp = fopen("input.txt", "r");
 	while(fgets(buff, 500, fp) != NULL) {
 		if(*buff != ';') {
 			buff[strcspn(buff, "\r\n;")] = 0;
