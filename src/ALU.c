@@ -17,13 +17,11 @@ int ALU(int A, int B, int func)
 	/*
 	 * We need to pass in the func, (00 for ADD, 01 for NAND, 10 for A - B, and 11 for A + 1)
 	 * We need the func to be passed in because that way we know what operations we are doing
-	 * Im not sure how to pass in value to this "class"
 	 */
 
 	//ADD
 	if (func == 0)
 	{
-		//TODO
 		char RegA[20];
 		memset(RegA, 0, sizeof(RegA));
 		strcpy(RegA, fromDecToBin(A));
@@ -119,12 +117,10 @@ int ALU(int A, int B, int func)
 			}
 		}
 
-//		int sign = 0;
 		char RegC[20];
 		memset(RegC, 0, sizeof(RegC));
 		strcpy(RegC, "");
 
-//		if(result[0] == '1') sign = 1;
 		int j;
 		for(j = 1; j < strlen(result); j++) {
 			if(result[j] == '1') strcat(RegC, "0");
@@ -135,14 +131,6 @@ int ALU(int A, int B, int func)
 	//A-B
 	else if (func == 10)
 	{
-		//case 1: if A > 0 and B > 0 --> negate B, then A+B
-
-		//case 2: if A > 0 but B < 0 --> negate B, then A+B
-
-		//case 3: if A < 0 but B > 0 --> negate B, then A+B
-
-		//case 4: if A < 0 and B < 0 --> negate B, then A+B
-
 		char RegA[20];
 		memset(RegA, 0, sizeof(RegA));
 		strcpy(RegA, fromDecToBin(A));

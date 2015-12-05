@@ -33,7 +33,6 @@ char* getLabel(int index) {
 }
 void setLabel(char* label, int index) {
 	strcpy(start->label[index].label, label);
-//	printf("SET %d %s\n",index, start->label[index].label);
 }
 
 int orig = 0;
@@ -239,9 +238,7 @@ char* InstructionRegister(char* instruction, char* params[], int line) {
 	/******************NAND*******************/
 	/*****************************************/
 	else if(strcmp("0001", instruction) == 0) { //NAND
-		printf("THIS IS NAND IN IR\n");
 		getRTypeInstructionInfo(memLine, instruction, params);
-		printf("%s\n", memLine);
 		return memLine;
 	}
 	/*****************************************/
@@ -274,17 +271,13 @@ char* InstructionRegister(char* instruction, char* params[], int line) {
 		char* binReg2 = getBinaryRegister(params[1]);
 		int i;
 		char* label;
-		for(i = 2000; i <= 2100; i++) {
+		for(i = orig; i <= orig+100; i++) {
 			if(strcmp(params[2], start->label[i].label) == 0) {
-//				printf("%d %s\n",i,  start->label[i].label);
-//				printf("%d\n",  i-(line+2000+1));
-				label = fromDecToBin(i-(line+2000+1));
-//				printf("BIN LABEL %s\n", label);
+				label = fromDecToBin(i-(line+orig+1));
 				break;
 			}
 		}
-		int labelNum = i-(line+2000+1);
-//		printf("LABEL %d\n", labelNum);
+		int labelNum = i-(line+orig+1);
 
 		if(labelNum > 0) sign = "0";
 		else sign = "1";

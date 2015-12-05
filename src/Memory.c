@@ -21,19 +21,10 @@ typedef struct instruction{
 typedef struct memoryHeap{
 	Instruction inst[5000];
 } Heap;
-//static void* heap;
 static Heap* root;
 
 void create_pool(int size) {
-//    heap = malloc(size);
-    //give it a storage
     root = malloc(sizeof(Heap));
-
-//    if(heap == NULL) {
-//        printf ("Failed to allocate space for %d bytes\n", size);
-//        return;
-//    }
-//    root = heap;
     Heap* current = root;
     int i;
     for(i = 0; i < 5000; i++) {
@@ -43,7 +34,6 @@ void create_pool(int size) {
 }
 
 void Memory(char* memoryLine, int lines) {
-//	Heap* current = root;
 	strcpy(root->inst[lines].memoryLine, memoryLine);
 }
 
