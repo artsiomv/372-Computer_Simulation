@@ -367,12 +367,10 @@ int main() {
 	fclose(fp);
 	setPC(getStartAddress()+1);
 	int k = 0;
-//	printf("Memory at 1000 before: %s\n", getMemory(1000));
 	strcpy(memBefore, getMemory(1000));
 	while(getPC() < i+getStartAddress()-1) {
 		fetch(getPC());
 	}
 	strcpy(memAfter, getMemory(1000));
-//	printf("Memory at 1000  after: %s\n", getMemory(1000));
 	output(i);
 }

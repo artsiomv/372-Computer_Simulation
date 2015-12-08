@@ -15,14 +15,14 @@ typedef struct label{
 	char label[10];
 } Label;
 typedef struct index{
-	Label label[5000];
+	Label label[10000];
 } LabelIndex;
 LabelIndex* start;
 
 void initialize() {
 	start = malloc(sizeof(LabelIndex));
 	LabelIndex* curr = start;
-	for(int t = 0; t < 5000; t++) {
+	for(int t = 0; t < 10000; t++) {
 		memset(curr->label[t].label, 0, sizeof(curr->label[t].label));
 		strcpy(curr->label[t].label, "    ");
 	}

@@ -19,7 +19,7 @@ typedef struct instruction{
 } Instruction;
 
 typedef struct memoryHeap{
-	Instruction inst[5000];
+	Instruction inst[10000];
 } Heap;
 static Heap* root;
 
@@ -27,7 +27,7 @@ void create_pool(int size) {
     root = malloc(sizeof(Heap));
     Heap* current = root;
     int i;
-    for(i = 0; i < 5000; i++) {
+    for(i = 0; i < 10000; i++) {
     	memset(current->inst[i].memoryLine, 0, sizeof(current->inst[i].memoryLine));
     	strcpy(current->inst[i].memoryLine, fromDecToBin(abs((int)current->inst[i].memoryLine)%10000));
     }
